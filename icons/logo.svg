@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF9F4D"/>
+      <stop offset="1" stop-color="#EA6A0C"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD2AB"/>
+      <stop offset=".4" stop-color="#E8700F"/>
+      <stop offset="1" stop-color="#8F4306"/>
+    </linearGradient>
+  </defs>
+  <!-- raised like everything else in the skin: light top edge, dark lip underneath -->
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#edge)"/>
+  <rect x="7" y="7" width="114" height="109" rx="27" fill="url(#fill)"/>
+  <g fill="none" stroke-linecap="round" stroke-width="17">
+    <path stroke="#4A2507" stroke-opacity=".28" d="M54 57v37a15 15 0 0 1-15 15h-5M84 33v47a14 14 0 0 0 14 14h1" transform="translate(0 3)"/>
+    <path stroke="#fff" d="M54 57v37a15 15 0 0 1-15 15h-5M84 33v47a14 14 0 0 0 14 14h1"/>
+  </g>
+  <circle cx="54" cy="34" r="11" fill="#4A3A55"/>
+</svg>

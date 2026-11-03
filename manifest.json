@@ -1,0 +1,110 @@
+{
+  "manifest_version": 3,
+  "name": "jlearning",
+  "version": "0.8.9",
+  "description": "Friis's raised 3D look and elastic motion for itslearning.",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.itslearning.com/*"
+      ],
+      "css": [
+        "generated/easing.css",
+        "generated/site-dark.css",
+        "tokens.css",
+        "theme.css",
+        "readers.css"
+      ],
+      "js": [
+        "generated/known.js",
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "exclude_matches": [
+        "https://platform.itslearning.com/PdfViewer/*"
+      ]
+    },
+    {
+      "matches": [
+        "https://platform.itslearning.com/PdfViewer/*"
+      ],
+      "css": [
+        "generated/easing.css",
+        "tokens.css",
+        "theme.css",
+        "readers.css"
+      ],
+      "js": [
+        "generated/known.js",
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://powerpoint.officeapps.live.com/*"
+      ],
+      "css": [
+        "generated/easing.css",
+        "tokens.css",
+        "readers.css"
+      ],
+      "js": [
+        "generated/known.js",
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://*.itslearning.com/Resources*"
+      ],
+      "js": [
+        "fast-resources.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "speed",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "generated/icons/*",
+        "transform.mjs",
+        "icons/logo.svg"
+      ],
+      "matches": [
+        "https://*.itslearning.com/*"
+      ]
+    }
+  ]
+}

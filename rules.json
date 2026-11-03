@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||ircdname.azureedge.net/immersivereadersdk/",
+      "resourceTypes": ["script"],
+      "initiatorDomains": ["itslearning.com"]
+    }
+  }
+]

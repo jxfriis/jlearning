@@ -1,0 +1,813 @@
+/* jlearning: Friis's look on itslearning.
+   raised = light top edge + dark lip underneath; inset = dark top edge + light bottom. Each is a transparent
+   border painted with a gradient (border-box) under a fill (padding-box), exactly as in Friis's styles.css.
+   Friis's charcoal is tinted with itslearning's aubergine, and its red accent becomes the itslearning orange.
+   Motion is CSS only: entrances are keyframes, presses are :active transitions, so no script runs on the page. */
+
+html[data-jl="light"] .jl-switch i { translate: 18px 0; }
+html:not([data-jl]) .jl-switch { display: none; }
+
+html[data-jl] {
+  /* the site's own variables */
+  --font-family-body: var(--jl-font);
+  --font-family-headings: var(--jl-font);
+  --color-text: var(--jl-text);
+  --color-background-page: var(--jl-win);
+  --color-background: transparent;
+  --color-focus-ring: var(--jl-accent);
+  --jl-ease-transitions: scale 650ms var(--jl-spring), translate 650ms var(--jl-bouncy), background-color 120ms, color 120ms, border-color 120ms, box-shadow 120ms;
+
+  background: var(--jl-win) !important;
+  & body {
+    background: var(--jl-win) !important;
+    color: var(--jl-text);
+    font-family: var(--jl-font);
+    -webkit-font-smoothing: antialiased;
+  }
+  & :is(input, select, textarea, button) { font-family: var(--jl-font); }
+  & :is(h1, h2) { color: var(--jl-text) !important; }
+  & :is(h1, h2, h3, h4, h5) { letter-spacing: -.01em; font-weight: 650; font-family: var(--jl-font); }
+
+  & ::-webkit-scrollbar { width: 10px; height: 10px; }
+  & ::-webkit-scrollbar-thumb { background: var(--jl-thumb); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+  & ::-webkit-scrollbar-thumb:hover { background-color: var(--jl-thumb-hover); }
+  & ::-webkit-scrollbar-track { background: transparent; }
+
+  & a:not(.prom-button, .coursecard__main, .prom-navigation__item, [class*="button"]) { text-underline-offset: 2px; }
+
+  /* ---------- top bars ---------- */
+  & :is(#l-header, .prom-main-menu, .prom-main-menu__search, .prom-navigation, .prom-navigation__items) { background: transparent !important; }
+  & .prom-main-menu { border-bottom: 1px solid var(--jl-divider) !important; box-shadow: none !important; }
+  & #l-header { background: var(--jl-win) !important; }
+  & .prom-secondary-menu { background: var(--jl-win) !important; border-bottom: 1px solid var(--jl-divider) !important; box-shadow: none !important; }
+  & .prom-secondary-navigation { background: transparent !important; }
+  & .prom-secondary-menu__text { font-size: 15px; }
+  & .prom-navigation__logo { border-radius: 9px; }
+
+  /* the site stacks nav items in columns with top padding, for its underline; a pill needs them centred */
+  & .prom-navigation__listitem { justify-content: center; background: transparent !important; }
+  & .prom-navigation__listitem.has-submenu { align-items: center; justify-content: flex-start; }
+  & .prom-navigation__item, & .prom-navigation__item[aria-expanded].prom-navigation__item--selected {
+    color: var(--jl-muted) !important;
+    margin: 0 2px; height: 38px; padding: 0 12px !important;
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;
+    line-height: 1.2;
+    border: 1px solid transparent !important; border-bottom-width: 3px !important; border-radius: 10px;
+    background: transparent;
+    transition: var(--jl-ease-transitions);
+  }
+  & .prom-navigation__item-text { color: inherit !important; }
+  & .prom-navigation__item:hover { color: var(--jl-text) !important; background: var(--jl-hover); }
+  & .prom-navigation__item--selected {
+    color: var(--jl-text) !important; font-weight: 600;
+    background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box !important;
+  }
+  & .prom-navigation__item { height: 38px !important; }
+  /* a "combined" item holds the logo beside its text: the logo stands alone and the pill goes on the text */
+  & .prom-navigation__item.combined, & .prom-navigation__item.combined:hover {
+    padding: 0 !important; gap: 10px; border: 0 !important; background: none !important;
+  }
+  & .prom-navigation__item .prom-navigation__logo { display: block; flex: none; width: 32px; height: 32px; margin: 0 0 0 4px !important; }
+  & .prom-navigation__item-text--combined {
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 0 !important;
+    height: 38px; padding: 0 12px !important;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 10px;
+    transition: var(--jl-ease-transitions);
+  }
+  & .prom-navigation__item.combined:hover .prom-navigation__item-text--combined { background: var(--jl-hover); }
+  & .prom-navigation__item--selected .prom-navigation__item-text--combined {
+    background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box !important;
+  }
+  & :is(.prom-navigation__item--selected-gfx, .prom-navigation__item--selected-gfx-wide) { display: none !important; }
+
+  & .prom-global-search__input-container {
+    border: 1px solid transparent !important; border-top-width: 2px !important; border-radius: 12px !important;
+    background: linear-gradient(var(--jl-inset-fill), var(--jl-inset-fill)) padding-box, var(--jl-inset-edge) border-box !important;
+    box-shadow: none !important;
+  }
+  & .prom-global-search__input-container:focus-within {
+    background: linear-gradient(var(--jl-inset-fill), var(--jl-inset-fill)) padding-box, linear-gradient(var(--jl-accent), var(--jl-accent)) border-box !important;
+  }
+  & .prom-global-search_shortcut {
+    border: 1px solid transparent !important; border-bottom-width: 2px !important; border-radius: 6px;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    color: var(--jl-muted) !important;
+  }
+
+  & .personal__items { border-radius: 10px; transition: var(--jl-ease-transitions); }
+  & .personal__items:hover { background: var(--jl-hover) !important; }
+  & :is(.personal__items-badge, #Notification-badge-number) {
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box !important;
+    border: 1px solid transparent !important; border-bottom-width: 2px !important;
+    color: var(--jl-on-accent) !important; font-weight: 700;
+    animation: jl-pop 700ms var(--jl-spring) 400ms backwards;
+  }
+
+  /* ---------- course cards ---------- */
+  & :is(main, .main, .l-main, .l-main-content, .coursecards, .content-area) { background: transparent !important; }
+  /* each card is a raised surface in its course's own colour, lit from the top like Friis's accent buttons */
+  & .coursecard > .coursecard__main {
+    --jl-c: var(--jl-course, var(--jl-accent));
+    position: relative; overflow: hidden;
+    color: var(--jl-text) !important;
+    border: 1px solid transparent !important; border-bottom-width: 3px !important; border-radius: 16px !important;
+    background:
+      linear-gradient(color-mix(in srgb, var(--jl-c) var(--jl-card-top), var(--jl-card-base)), color-mix(in srgb, var(--jl-c) var(--jl-card-bottom), var(--jl-card-base))) padding-box,
+      linear-gradient(color-mix(in srgb, var(--jl-c) 75%, #fff) 0%, color-mix(in srgb, var(--jl-c) 55%, var(--jl-card-base)) 35%, var(--jl-card-lip) 100%) border-box !important;
+    box-shadow: var(--jl-soft-shadow);
+    text-decoration: none;
+    transition: var(--jl-ease-transitions);
+  }
+  & .coursecard > .coursecard__main:hover {
+    --jl-card-top: var(--jl-card-top-hover);
+    translate: 0 -3px;
+    box-shadow: var(--jl-panel-shadow);
+  }
+  & .coursecard > .coursecard__main::before { display: none !important; }
+  & .coursecard__title { color: var(--jl-text) !important; font-size: 15px; line-height: 1.3; }
+  & .coursecard-lastupdated { color: var(--jl-card-sub) !important; font-size: 12px; padding: 4px 8px 0 !important; }
+  & .coursecard__teachers { color: var(--jl-card-sub) !important; font-size: 12px; }
+
+  /* ---------- light/dark switch, added to the top bar by content.js ---------- */
+  & .jl-switch {
+    flex: none; align-self: center; position: relative; width: 44px; height: 26px; margin: 0 6px; padding: 0;
+    border: 1px solid transparent; border-top-width: 2px; border-radius: 13px; cursor: pointer;
+    background: linear-gradient(var(--jl-inset-fill), var(--jl-inset-fill)) padding-box, var(--jl-inset-edge) border-box;
+  }
+  & .jl-switch:focus-visible { outline: 2px solid var(--jl-accent); outline-offset: 2px; }
+  & .jl-switch i {
+    position: absolute; top: 1px; left: 1px; width: 20px; height: 20px; border-radius: 50%;
+    border: 1px solid transparent; border-bottom-width: 2px;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box;
+    transition: translate 750ms var(--jl-spring);
+  }
+  /* the glyph sits in the knob, so the switch says which mode you're in */
+  & .jl-switch i::after {
+    content: ""; position: absolute; inset: 3px; background: var(--jl-accent-text);
+    mask: var(--jl-switch-glyph) center / contain no-repeat;
+  }
+
+  /* ---------- content blocks on course pages and dashboards ---------- */
+  & :is(.itsl-plan-card, .itsl-cb-news-item-lightbulletin, .itsl-notification, .content-block, .prom-element-card) {
+    border: 1px solid transparent !important; border-radius: 16px !important;
+    background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box !important;
+    box-shadow: var(--jl-panel-shadow);
+    color: var(--jl-text) !important;
+    margin-bottom: 10px;
+    transition: var(--jl-ease-transitions);
+  }
+  /* only what's on screen at load springs in; a long course page would otherwise animate thousands of pixels */
+  & :is(.itsl-plan-card, .itsl-cb-news-item-lightbulletin, .itsl-notification, .prom-element-card):nth-child(-n+5) { animation: jl-enter 500ms var(--jl-bouncy) backwards; }
+  /* course pages run to 10,000px: skip rendering what's off screen, unless its menu is open */
+  & :is(.itsl-plan-card, .itsl-notification, .itsl-cb-news-item-lightbulletin):nth-child(n+4):not(:has(.prom-dropdown:not([hidden]))) {
+    content-visibility: auto; contain-intrinsic-size: auto 160px;
+  }
+
+  /* settings-style link cards: the whole card is a link, so only its title should look like one */
+  & .category-link__title { color: var(--jl-accent-text) !important; }
+  & .category-link__description { color: var(--jl-muted) !important; }
+
+  /* the plan element viewer */
+  & .resource-page__sidebar { background: var(--jl-win) !important; border-right: 1px solid var(--jl-divider) !important; }
+  & .resource-page__content { background: var(--jl-win) !important; }
+  & :is(.resource-page_resource-item:hover, .resource-page_resource-item.current) { background: var(--jl-selected-fill) !important; border-radius: 10px; }
+  & .itsl-plan-card--hover-support:hover { translate: 0 -2px; background: var(--jl-raised-fill-hover) padding-box, var(--jl-panel-edge) border-box !important; }
+  & :is(.itsl-plan-card__image, .itsl-plan-card__image img) { border-radius: 10px; }
+  & .itsl-light-bulletins-elementlink-list-item {
+    border: 1px solid transparent !important; border-top-width: 2px !important; border-radius: 10px !important;
+    background: linear-gradient(var(--jl-inset-fill), var(--jl-inset-fill)) padding-box, var(--jl-inset-edge) border-box !important;
+  }
+  & :is(.il-widget-header, .itsl-latestchanges-pagination) { background: transparent !important; box-shadow: none !important; }
+  & .prom-collapsible-list__innerbutton {
+    border: 1px solid transparent !important; border-bottom-width: 3px !important;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+  }
+  /* topic chips keep the course colour they're given inline, so they need dark ink */
+  & .itsl-plan-card__topic, & [class*="topic"][style*="background-color"], & [class*="topic"][style*="background-color"] * { color: #201006 !important; }
+  & .itsl-plan-card__topic { border-radius: 6px !important; }
+
+  /* ---------- buttons ---------- */
+  & .prom-button:not(.prom-icon-button) > .prom-button__text {
+    border: 1px solid transparent !important; border-bottom-width: 4px !important; border-radius: 10px !important;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    color: var(--jl-text) !important;
+    font-weight: 500;
+    transition: background-color 120ms, color 120ms;
+  }
+  & .prom-button:not(.prom-icon-button):hover > .prom-button__text { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box !important; }
+  & .prom-button__primary > .prom-button__text {
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box !important;
+    color: var(--jl-on-accent) !important; font-weight: 600;
+    box-shadow: var(--jl-soft-shadow);
+  }
+  & .prom-button__primary:hover > .prom-button__text { background: var(--jl-accent-fill-hover) padding-box, var(--jl-accent-edge) border-box !important; }
+  /* an icon button's glyph is its background-image, so the raised look can't use one here */
+  & .prom-icon-button > .prom-button__text {
+    border: 1px solid transparent !important; border-bottom-width: 4px !important; border-radius: 10px !important;
+    border-color: var(--jl-raised-edges) !important;
+    background-color: var(--jl-raised-flat) !important;
+    color: var(--jl-text) !important;
+    transition: background-color 120ms, color 120ms;
+  }
+  & .prom-icon-button--icon-only > .prom-button__text, & .prom-button__plain.prom-icon-button > .prom-button__text {
+    background-color: transparent !important; border-color: transparent !important;
+  }
+  & .prom-button__plain:not(.prom-icon-button) > .prom-button__text { background: transparent !important; border-color: transparent !important; }
+  & :is(.prom-icon-button--icon-only, .prom-button__plain):hover > .prom-button__text { background-color: var(--jl-hover) !important; }
+
+  /* ---------- segmented choice: a sunken track holding one raised pill ---------- */
+  & .prom-segmented-button {
+    border: 1px solid transparent !important; border-bottom-width: 3px !important; border-radius: 9px !important;
+    margin: 0 1px; color: var(--jl-muted) !important;
+    background: var(--jl-inset-fill) !important;
+    transition: var(--jl-ease-transitions);
+  }
+  & .prom-segmented-button:hover { background: var(--jl-hover) !important; color: var(--jl-text) !important; }
+  & .prom-segmented-button__input:checked + .prom-segmented-button {
+    background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    color: var(--jl-text) !important; font-weight: 600;
+  }
+  & .prom-segmented-button:active { scale: .94; transition: scale 90ms var(--jl-quick); }
+  & :is(input[type="submit"], input[type="button"], .ccl-button) {
+    border: 1px solid transparent !important; border-bottom-width: 4px !important; border-radius: 10px !important;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    color: var(--jl-text) !important;
+    box-shadow: none !important; text-shadow: none !important;
+  }
+  & :is(input[type="submit"], input[type="button"], .ccl-button):hover { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box !important; }
+
+  /* every button squashes on press and springs back on release, as in Friis */
+  & :is(button, [role="button"], input[type="submit"], input[type="button"], .ccl-button, .prom-button, .prom-navigation__item, label[for]) {
+    transition: var(--jl-ease-transitions);
+  }
+  & :is(button, [role="button"], input[type="submit"], input[type="button"], .ccl-button, .prom-navigation__item):active:not(:disabled) {
+    scale: .94;
+    transition: scale 90ms var(--jl-quick);
+  }
+  & .coursecard > .coursecard__main:active:not(:has(button:active)) {
+    scale: .97; translate: 0 0;
+    transition: scale 90ms var(--jl-quick), translate 90ms var(--jl-quick);
+  }
+
+  /* ---------- fields ---------- */
+  /* fields keep their background-image free: search and select glyphs live there */
+  & :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], input[type="date"], input[type="time"], input:not([type]), textarea, select, .prom-select__select) {
+    border-style: solid !important; border-width: 2px 1px 1px !important; border-radius: 10px !important;
+    border-color: var(--jl-inset-edges) !important;
+    background-color: var(--jl-inset-fill) !important;
+    color: var(--jl-text) !important;
+    box-shadow: none !important;
+    outline: none;
+  }
+  & :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], input:not([type]), textarea, select, .prom-select__select):focus {
+    border-color: var(--jl-accent) !important;
+  }
+  /* the global search draws its own field around a bare input */
+  & .prom-global-search__input-container input { background-color: transparent !important; border: 0 !important; }
+  & ::placeholder { color: var(--jl-faint) !important; }
+  & :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--jl-accent); }
+  & :focus-visible { outline-color: var(--jl-accent) !important; }
+
+  /* ---------- floating surfaces ---------- */
+  /* a school's logo is made for white, so it keeps a white plate */
+  & .l-login-sitelogo { background: #fff; border-radius: 8px; padding: 6px 10px; box-sizing: content-box; }
+  & :is(.prom-panel, .prom-dropdown, .ui-dialog, .ccl-dialog, .ccl-tooltip-popup, .prom-usermenu, .itslogin-box, .login-box) {
+    border: 1px solid transparent !important; border-radius: 16px !important;
+    background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box !important;
+    box-shadow: var(--jl-panel-shadow) !important;
+    color: var(--jl-text);
+  }
+  & .prom-panel-right { border-radius: 16px 0 0 16px !important; }
+  & .prom-dropdown:not([hidden]) { animation: jl-pop 500ms var(--jl-spring) backwards; transform-origin: top right; }
+  & .prom-dropdown__listitem { border-radius: 8px; color: var(--jl-text) !important; background: transparent !important; }
+  & .prom-dropdown__listitem:hover { background: var(--jl-hover) !important; }
+  & .prom-navigation_submenu:not([hidden]) {
+    background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box !important;
+    border: 1px solid transparent !important; border-radius: 12px !important; box-shadow: var(--jl-panel-shadow) !important;
+  }
+  & .prom-panel-right.prom-panel__open { animation: jl-slide-in 650ms var(--jl-bouncy) backwards; }
+  & .prom-panel__overlay, & .l-header-mask { background: var(--jl-scrim) !important; }
+
+  /* ---------- entrances ---------- */
+  & .coursecard { animation: jl-pop 700ms var(--jl-spring) backwards; }
+  & li:nth-child(2) > .coursecard { animation-delay: 40ms; }
+  & li:nth-child(3) > .coursecard { animation-delay: 80ms; }
+  & li:nth-child(4) > .coursecard { animation-delay: 120ms; }
+  & li:nth-child(5) > .coursecard { animation-delay: 160ms; }
+  & li:nth-child(6) > .coursecard { animation-delay: 200ms; }
+  & li:nth-child(n+7) > .coursecard { animation-delay: 240ms; }
+}
+
+html[data-jl] {
+  ::selection { background: color-mix(in srgb, var(--jl-accent) 45%, transparent); }
+
+  /* ---------- page headings ---------- */
+  & .prom-page-header__header-title-text { font-size: 22px; font-weight: 650; }
+
+  /* ---------- tabs: a row of pills, the current one raised ---------- */
+  & .prom-tabs__tablist { border-bottom: 0 !important; gap: 4px; }
+  & .prom-tabs__link {
+    border: 1px solid transparent !important; border-bottom-width: 3px !important; border-radius: 10px;
+    padding: 7px 14px !important; color: var(--jl-muted) !important; text-decoration: none;
+    transition: var(--jl-ease-transitions);
+  }
+  & .prom-tabs__link:hover { background: var(--jl-hover); color: var(--jl-text) !important; }
+  & .prom-tabs__link[aria-selected="true"] {
+    background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box;
+    color: var(--jl-text) !important; font-weight: 600;
+    animation: jl-soft-pop 600ms var(--jl-spring) backwards;
+  }
+  & .prom-tabs__link:active { scale: .94; transition: scale 90ms var(--jl-quick); }
+
+  /* ---------- tables ---------- */
+  & .prom-table__header { background: transparent !important; border-bottom: 1px solid var(--jl-divider) !important; color: var(--jl-muted) !important; }
+  & .prom-table-cell { background-color: transparent !important; border-color: var(--jl-divider) !important; }
+  & .prom-table__row { transition: background-color 120ms; }
+  & .prom-table__row:hover { background: var(--jl-hover) !important; }
+  & .prom-table-cell .prom-link { text-decoration: none; font-weight: 600; }
+  & .prom-table-cell .prom-link:hover { text-decoration: underline; }
+
+  /* ---------- side lists ---------- */
+  & :is(.prom-navigation-panel__primary-item--link, .prom-navigation-panel__secondary-item--link, .resource-page_resource-item) {
+    border-radius: 10px; transition: var(--jl-ease-transitions);
+  }
+  & :is(.prom-navigation-panel__primary-item--link, .prom-navigation-panel__secondary-item--link, .resource-page_resource-item):hover {
+    background: var(--jl-hover) !important; translate: 3px 0;
+  }
+
+  /* ---------- link cards and widgets ---------- */
+  & :is(.category-link, .prom-category-link) { border-radius: 12px; transition: var(--jl-ease-transitions); }
+  & :is(.category-link, .prom-category-link):hover { background: var(--jl-hover); translate: 0 -2px; }
+  & :is(.category-link, .prom-category-link):active { scale: .97; transition: scale 90ms var(--jl-quick); }
+  & .category-link__icon { border-radius: 10px; transition: scale 650ms var(--jl-spring); }
+  & .category-link:hover .category-link__icon { scale: 1.1; }
+  & .itsl-widget-box {
+    border: 1px solid transparent !important; border-radius: 16px !important;
+    background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box !important;
+    box-shadow: var(--jl-panel-shadow);
+  }
+  & .itsl-notification:hover { translate: 0 -2px; }
+  & .fc-event { border-radius: 8px !important; transition: var(--jl-ease-transitions); }
+  & .fc-event:hover { translate: 0 -2px; }
+
+  /* ---------- small controls ---------- */
+  & .prom-listbox-dropdown__component {
+    border: 1px solid !important; border-top-width: 2px !important; border-radius: 10px !important;
+    border-color: var(--jl-inset-edges) !important; background-color: var(--jl-inset-fill) !important; color: var(--jl-text) !important;
+  }
+  & .prom-checkbox__custom-check { border-radius: 6px; transition: scale 650ms var(--jl-spring), background-color 120ms; }
+  & .prom-checkbox:hover .prom-checkbox__custom-check { scale: 1.08; }
+  & .prom-checkbox__input:checked + .prom-checkbox__custom-check, & input[type="checkbox"]:checked { animation: jl-check 550ms var(--jl-spring); }
+  & .prom-switch__input:checked + .prom-switch__custom-button { background-color: var(--jl-accent) !important; border-color: var(--jl-accent) !important; }
+  & .prom-switch__custom-button-inner { transition: left 750ms var(--jl-spring), background-color 120ms; }
+  & .prom-pagination__link { border-radius: 10px !important; text-decoration: none; transition: var(--jl-ease-transitions); }
+  & .prom-pagination__link[href]:hover { background: var(--jl-hover) !important; translate: 0 -2px; }
+  & .prom-pagination__link[href][aria-current] {
+    border: 1px solid transparent; border-bottom-width: 3px;
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box !important; color: var(--jl-on-accent) !important;
+  }
+  & .prom-progress progress[value]::-webkit-progress-bar { background: var(--jl-inset-fill) !important; border-color: var(--jl-divider) !important; }
+  & .prom-progress progress[value]::-webkit-progress-value { background: var(--jl-accent-fill) !important; border-radius: 6px; }
+
+  /* ---------- things that respond to the pointer ---------- */
+  & .prom-button:not(.prom-icon-button--icon-only, .prom-button__plain):hover { translate: 0 -1px; }
+  & :is(.coursecard__favouriteToggle, .coursecard__editOptions, .prom-icon-button--icon-only):hover { scale: 1.16; }
+  & :is(.coursecard__favouriteToggle, .coursecard__editOptions, .prom-icon-button--icon-only):active { scale: .84; transition: scale 90ms var(--jl-quick); }
+  & .coursecard__favouriteToggle.starred { animation: jl-check 650ms var(--jl-spring) 200ms backwards; }
+  & :is(.prom-avatar, .prom-navigation__logo, .personal__items img, .course-hat) { transition: scale 650ms var(--jl-spring), rotate 650ms var(--jl-spring); }
+  & :is(.personal__items:hover .prom-avatar, a:hover > .prom-navigation__logo, .prom-secondary-menu__title:hover .course-hat) { scale: 1.1; }
+  & .personal__items:hover img { scale: 1.14; }
+  & #Notification:hover img { animation: jl-ring 600ms var(--jl-quick); }
+
+  /* ---------- things that appear ---------- */
+  & .prom-navigation__item--selected:not(.combined), & .prom-navigation__item--selected .prom-navigation__item-text--combined { animation: jl-soft-pop 600ms var(--jl-spring) backwards; }
+  & :is(.ui-dialog, .ccl-dialog, .prom-modal__body) { animation: jl-pop 600ms var(--jl-spring) backwards; }
+  & .prom-tooltip:not(.prom-tooltip__hidden) { animation: jl-soft-pop 350ms var(--jl-back) backwards; }
+  & .prom-navigation_submenu:not([hidden]) { animation: jl-pop 500ms var(--jl-spring) backwards; transform-origin: top left; }
+  & .prom-dropdown:not([hidden]) .prom-dropdown__listitems { animation: jl-enter 400ms var(--jl-bouncy) backwards; }
+  & .prom-dropdown:not([hidden]) .prom-dropdown__listitems:nth-child(2) { animation-delay: 30ms; }
+  & .prom-dropdown:not([hidden]) .prom-dropdown__listitems:nth-child(3) { animation-delay: 60ms; }
+  & .prom-dropdown:not([hidden]) .prom-dropdown__listitems:nth-child(n+4) { animation-delay: 90ms; }
+  & .prom-usermenu_list > li { animation: jl-enter 450ms var(--jl-bouncy) 60ms backwards; }
+
+  /* ---------- our logo ---------- */
+  & .prom-navigation__logo { content: url(chrome-extension://__MSG_@@extension_id__/icons/logo.svg); }
+
+  /* ---------- top search: our popup on the site's results ---------- */
+  & .prom-global-search__popup-container {
+    margin-top: 6px; overflow: hidden;
+    border: 1px solid transparent !important; border-radius: 16px !important;
+    background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box !important;
+    box-shadow: var(--jl-panel-shadow) !important;
+    animation: jl-pop 500ms var(--jl-spring) backwards; transform-origin: top right;
+  }
+  & .prom-global-search__popup-content, & .prom-global-search__listbox { background: transparent !important; }
+  & .prom-global-search__listbox { padding: 6px !important; }
+  & .prom-element-link {
+    margin-bottom: 2px; border: 0 !important; border-radius: 10px; background: transparent !important;
+    transition: var(--jl-ease-transitions);
+  }
+  & :is(.prom-element-link:hover, .prom-element-link--focused) { background: var(--jl-selected-fill) !important; translate: 2px 0; }
+  & .prom-element-link__link { border: 0 !important; background: transparent !important; color: var(--jl-text) !important; text-decoration: none !important; box-shadow: none !important; outline-offset: -2px; }
+  & .prom-element-link__title { color: var(--jl-text) !important; font-weight: 600; }
+  & .prom-element-link__data { color: var(--jl-muted) !important; font-size: 12px; }
+  & .prom-global-search__popup-container .prom-empty-state { padding: 18px 20px 6px; background: transparent !important; }
+  & .prom-global-search__popup-container .prom-empty-state__icon { width: 64px; height: 64px; margin: 0 auto 8px; background-size: contain; }
+  & .prom-global-search__popup-container .prom-empty-state__title { margin: 0 0 4px; font-size: 15px; color: var(--jl-text) !important; }
+  & .prom-global-search__popup-container .prom-empty-state__description { margin: 0; font-size: 13px; color: var(--jl-muted) !important; }
+  & .prom-global-search__all-results {
+    display: flex; gap: 6px; padding: 8px !important; justify-content: stretch;
+    border-top: 1px solid var(--jl-divider) !important; background: transparent !important;
+  }
+  & .prom-global-search__all-results a {
+    flex: 1; display: flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 10px; white-space: nowrap;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 10px;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box;
+    color: var(--jl-text) !important; font-size: 13px; font-weight: 600; text-decoration: none !important;
+    transition: var(--jl-ease-transitions);
+  }
+  & .prom-global-search__all-results a:hover { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box; translate: 0 -1px; }
+  & .prom-global-search__all-results a:active { scale: .95; transition: scale 90ms var(--jl-quick); }
+
+  /* ---------- Ressourcer: folders and files as rows you can click anywhere on ---------- */
+  & #Resources {
+    & .content-block:has(.prom-table) { padding: 14px 0 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+    & .prom-table { border-collapse: separate; border-spacing: 0 6px; }
+    & .prom-table__header, & .prom-table__header .prom-table__row { background: transparent !important; border: 0 !important; }
+    & .prom-table__header-cell { padding: 0 14px 2px !important; background: transparent !important; border: 0 !important; color: var(--jl-muted) !important; font-size: 12.5px; }
+    & .prom-table__header-cell button { color: inherit !important; font-size: inherit; }
+
+    & .prom-table__body .prom-table__row {
+      position: relative; background: transparent !important;
+      transition: translate 650ms var(--jl-bouncy), scale 650ms var(--jl-spring);
+    }
+    & .prom-table__body .prom-table-cell {
+      padding: 8px 14px !important; vertical-align: middle;
+      border: solid transparent !important; border-width: 1px 0 3px !important;
+      background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+      transition: background-color 120ms;
+    }
+    & .prom-table__body .prom-table-cell:first-child { border-left-width: 1px !important; border-radius: 14px 0 0 14px; }
+    & .prom-table__body .prom-table-cell:last-child { border-right-width: 1px !important; border-radius: 0 14px 14px 0; }
+    & .prom-table__body .prom-table__row:hover { translate: 0 -2px; }
+    & .prom-table__body .prom-table__row:hover .prom-table-cell { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box !important; }
+    & .prom-table__body .prom-table__row:active:not(:has(button:active)) { scale: .985; transition: scale 90ms var(--jl-quick); }
+
+    /* the whole row is the link; its menu stays clickable above that */
+    & .prom-table__body .prom-table-cell .prom-link { text-decoration: none !important; color: var(--jl-text) !important; font-size: 14px; font-weight: 500; }
+    & .prom-table__body .prom-table-cell .prom-link::after { content: ""; position: absolute; inset: 0; border-radius: 14px; }
+    & .prom-table-cell__button-dropdown { position: relative; z-index: 1; }
+    & .prom-table__body .prom-table-cell__text { color: var(--jl-muted) !important; font-size: 12.5px; }
+    & .prom-table__body .prom-table-cell__icon { width: 26px; height: 26px; margin-right: 4px; }
+
+    /* folders stand out from the files inside them */
+    & .prom-table__row:has(a[href*="FolderID"]) .prom-link { font-size: 15px; font-weight: 650; }
+    & .prom-table__row:has(a[href*="FolderID"]) .prom-table-cell__icon {
+      box-sizing: content-box; width: 26px; height: 26px; padding: 7px; border-radius: 12px;
+      background: color-mix(in srgb, var(--jl-accent) 16%, transparent);
+      transition: scale 650ms var(--jl-spring), rotate 650ms var(--jl-spring);
+    }
+    & .prom-table__row:has(a[href*="FolderID"]):hover .prom-table-cell__icon { scale: 1.1; rotate: -4deg; }
+
+    /* the side panel */
+    & .prom-navigation-panel { background: transparent !important; border-right: 1px solid var(--jl-divider) !important; }
+    & .prom-navigation-panel--selected {
+      border: 1px solid transparent; border-bottom-width: 3px;
+      background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    }
+  }
+
+  /* ---------- the folder tree in Ressourcer's side panel (content.js builds it) ---------- */
+  & .jl-tree { margin: 12px 0 6px; padding: 0 8px; max-height: calc(100vh - 230px); overflow: auto; }
+  & .jl-tree-heading { margin: 0 0 6px 6px; color: var(--jl-muted); font-size: 12px; font-weight: 600; }
+  & .jl-tree ul { margin: 0; padding: 0; list-style: none; }
+  & .jl-tree ul ul { margin-left: 15px; padding-left: 6px; border-left: 1px solid var(--jl-divider); }
+  & .jl-tree ul[hidden] { display: none; }
+  & .jl-tree-row { display: flex; align-items: center; gap: 2px; min-height: 34px; margin-bottom: 1px; padding-right: 6px; border-radius: 10px; transition: var(--jl-ease-transitions); }
+  & .jl-tree-row:hover { background: var(--jl-hover); translate: 2px 0; }
+  & .jl-tree-row.jl-tree-current { background: var(--jl-selected-fill); }
+  & .jl-tree-toggle {
+    position: relative; flex: none; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 7px; background: none; cursor: pointer;
+    rotate: 0deg; transition: rotate 450ms var(--jl-settle), scale 650ms var(--jl-spring);
+  }
+  & .jl-tree-toggle::before {
+    content: ""; position: absolute; inset: 0; background-color: var(--jl-muted);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.7 2.3 4.3 3.7 8.6 8l-4.3 4.3 1.4 1.4L11.4 8z'/%3E%3C/svg%3E") center / 11px no-repeat;
+  }
+  & .jl-tree-toggle[aria-expanded="true"] { rotate: 90deg; }
+  & .jl-tree-toggle:hover::before { background-color: var(--jl-text); }
+  & .jl-tree-toggle:focus-visible { outline: 2px solid var(--jl-accent); outline-offset: -2px; }
+  & .jl-tree-leaf .jl-tree-toggle { visibility: hidden; }
+  & .jl-tree-row a {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: 7px; padding: 6px 0;
+    color: var(--jl-text) !important; font-size: 13px; line-height: 1.25; text-decoration: none !important;
+    overflow-wrap: anywhere;   /* long folder names wrap instead of being cut off */
+  }
+  & .jl-tree-row a::before {
+    content: ""; flex: none; width: 15px; height: 15px; background-color: var(--jl-accent);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 3a1 1 0 0 1 1-1h4l1.5 2H14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  & .jl-tree-current a { font-weight: 650; }
+
+  /* ---------- the path to a folder or file: a sunken bar of steps, the current one raised ---------- */
+  & .prom-breadcrumbs {
+    flex: 1 1 100%; box-sizing: border-box; min-width: 0; margin: 10px 0 6px; padding: 5px !important;
+    border: 1px solid transparent; border-top-width: 2px; border-radius: 14px;
+    background: linear-gradient(var(--jl-inset-fill), var(--jl-inset-fill)) padding-box, var(--jl-inset-edge) border-box;
+  }
+  & .prom-breadcrumbs__list { gap: 2px !important; align-items: center !important; }
+  & .prom-breadcrumbs__list-item { align-items: center !important; min-width: 0; }
+  /* the arrow between two steps */
+  & .prom-breadcrumbs__list-item:not(:first-child)::before {
+    flex: none; width: 14px !important; height: 14px !important; margin: 0 2px !important; border: 0 !important; transform: none !important;
+    background-color: var(--jl-faint);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.7 2.3 4.3 3.7 8.6 8l-4.3 4.3 1.4 1.4L11.4 8z'/%3E%3C/svg%3E") center / 10px no-repeat;
+  }
+  & .prom-breadcrumbs__leaf {
+    display: inline-flex; align-items: center; gap: 7px; margin: 0 !important; padding: 6px 11px !important; min-height: 32px; box-sizing: border-box;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 10px;
+    color: var(--jl-muted) !important; font-size: 13px !important; line-height: 1.2; text-decoration: none !important;
+    transition: var(--jl-ease-transitions);
+  }
+  & a.prom-breadcrumbs__leaf:hover { background: var(--jl-hover); color: var(--jl-text) !important; translate: 0 -1px; }
+  & a.prom-breadcrumbs__leaf:active { scale: .95; transition: scale 90ms var(--jl-quick); }
+  & .prom-breadcrumbs__leaf::before {
+    content: ""; flex: none; width: 14px; height: 14px; background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 3a1 1 0 0 1 1-1h4l1.5 2H14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  /* the first step is home in Ressourcer */
+  & .prom-breadcrumbs__list-item:first-of-type .prom-breadcrumbs__leaf::before {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.2.8 7.6l1 1.1L3 7.7V14a1 1 0 0 0 1 1h2.8v-4.2h2.4V15H12a1 1 0 0 0 1-1V7.7l1.2 1 1-1.1z'/%3E%3C/svg%3E");
+  }
+  /* where you are */
+  & .prom-breadcrumbs__list-item[aria-current] .prom-breadcrumbs__leaf {
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box;
+    color: var(--jl-text) !important; font-weight: 650 !important;
+    animation: jl-soft-pop 500ms var(--jl-spring) backwards;
+  }
+  & .prom-breadcrumbs__list-item[aria-current] .prom-breadcrumbs__leaf::before { background-color: var(--jl-accent); }
+  /* a file has its own icon from the site, so it doesn't get a folder as well */
+  & .prom-breadcrumbs__link-with-icon { padding-left: 32px !important; background-position: 11px center !important; }
+  & .prom-breadcrumbs__link-with-icon::before { display: none; }
+
+  /* ---------- back and forward: always first in the room's title row ---------- */
+  & .prom-secondary-menu__title { align-items: center; }
+  & .jl-history { display: inline-flex; flex: none; gap: 6px; margin-right: 12px; }
+  & .jl-history button {
+    position: relative; width: 44px; height: 40px; padding: 0; cursor: pointer;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 12px;
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box;
+    box-shadow: var(--jl-soft-shadow);
+    transition: var(--jl-ease-transitions);
+  }
+  & .jl-history button:hover:not(:disabled) { background: var(--jl-accent-fill-hover) padding-box, var(--jl-accent-edge) border-box; translate: 0 -1px; }
+  & .jl-history button:active:not(:disabled) { scale: .94; transition: scale 90ms var(--jl-quick); }
+  & .jl-history button::before {
+    content: ""; position: absolute; inset: 0; background-color: var(--jl-on-accent);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M10.3 2.3 11.7 3.7 7.4 8l4.3 4.3-1.4 1.4L4.6 8z'/%3E%3C/svg%3E") center / 16px no-repeat;
+  }
+  & .jl-history .jl-forward::before { rotate: 180deg; }
+  & .jl-history button:disabled { opacity: .4; box-shadow: none; cursor: default; }
+  & .prom-secondary-menu__title .jl-reader-switch { margin: 0 0 0 auto; flex: none; }
+  & .jl-room-more { display: none; }
+
+  /* ---------- the clearer room view (switch in the title row) ---------- */
+  &[data-jl-room] {
+    /* just the title row: the tabs go, with the rest under "Mere" and Ressourcer and Planer as the front page's cards */
+    & .prom-secondary-menu { height: auto !important; min-height: 0; padding: 10px 16px; }
+    & .prom-secondary-menu__title { flex: 1 1 100%; width: 100%; max-width: none; height: auto; overflow: visible; gap: 10px; }
+    /* the room's name is its home button: a raised button holding the course's hat, its name and a house */
+    & .prom-secondary-menu__text {
+      position: relative; flex: 0 1 auto; box-sizing: border-box; min-width: 0; height: 46px; margin: 0; padding: 0 46px 0 52px; cursor: pointer;
+      line-height: 41px; font-size: 17px; font-weight: 650;
+      border: 1px solid transparent; border-bottom-width: 3px; border-radius: 14px;
+      background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box;
+      box-shadow: var(--jl-soft-shadow);
+      transition: var(--jl-ease-transitions);
+    }
+    & .prom-secondary-menu__text:hover { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box; box-shadow: var(--jl-panel-shadow); translate: 0 -2px; }
+    & .prom-secondary-menu__text:active { scale: .97; transition: scale 90ms var(--jl-quick); }
+    /* the button breathes after a click, not the link inside it: scaling the link would pull the house out of place */
+    & .prom-secondary-menu__text:has(.jl-pending) { animation: jl-breathe 700ms ease-in-out infinite alternate; }
+    & .prom-secondary-menu__text .jl-room-home.jl-pending { animation: none !important; }
+    /* on the front page already: lit, like a selected tab */
+    & .prom-secondary-menu:has(#dashboard.prom-navigation__item--selected) .prom-secondary-menu__text {
+      background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box;
+    }
+    & .prom-secondary-menu__title .course-hat { position: relative; z-index: 1; flex: none; margin: 0 -51px 0 9px; pointer-events: none; }
+    /* the link covers the whole button, and draws the house */
+    & .jl-room-home { position: static !important; display: block; }
+    & .jl-room-home::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+    & .jl-room-home:focus-visible::after { outline: 2px solid var(--jl-accent); outline-offset: 2px; }
+    & .jl-room-home::before {
+      content: ""; position: absolute; right: 14px; top: 50%; translate: 0 -50%; width: 18px; height: 18px; background-color: var(--jl-accent);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.2.8 7.6l1 1.1L3 7.7V14a1 1 0 0 0 1 1h2.8v-4.2h2.4V15H12a1 1 0 0 0 1-1V7.7l1.2 1 1-1.1z'/%3E%3C/svg%3E") center / contain no-repeat;
+      transition: scale 650ms var(--jl-spring);
+    }
+    & .prom-secondary-menu__text:hover .jl-room-home::before { scale: 1.2; }
+    & .prom-secondary-navigation-container { display: none !important; }
+
+    & .jl-room-more { display: block; position: relative; flex: none; margin-left: auto; }
+    & .jl-room-more summary {
+      display: flex; align-items: center; height: 38px; padding: 0 14px; list-style: none; cursor: pointer; user-select: none;
+      border: 1px solid transparent; border-bottom-width: 3px; border-radius: 10px; color: var(--jl-text); font-size: 13.5px; font-weight: 500;
+      background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box;
+      transition: var(--jl-ease-transitions);
+    }
+    & .jl-room-more summary::-webkit-details-marker { display: none; }
+    & .jl-room-more summary:hover { background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box; }
+    & .jl-room-more summary:active { scale: .94; transition: scale 90ms var(--jl-quick); }
+    & .jl-room-more > div {
+      position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 190px; padding: 6px;
+      border: 1px solid transparent; border-radius: 12px;
+      background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box;
+      box-shadow: var(--jl-panel-shadow);
+      animation: jl-pop 450ms var(--jl-spring) backwards; transform-origin: top right;
+    }
+    & .jl-room-more a { display: block; padding: 8px 10px; border-radius: 8px; color: var(--jl-text) !important; font-size: 13.5px; text-decoration: none !important; }
+    & .jl-room-more a:hover { background: var(--jl-hover); }
+    & .prom-secondary-menu__title .jl-reader-switch { margin-left: 4px; }
+
+    /* the room's front page: the plan preview goes, Ressourcer and Planer become the main thing, posts get the wide
+       column, and everything else shares a narrow one. Grid placement only, so the switch undoes all of it. */
+    & .itsl-cb-planner2 { display: none !important; }
+    & .image-limiter { display: block !important; }
+    & .il-widgetslayout {
+      display: grid !important; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto auto 1fr;
+      width: auto !important; max-width: none !important; margin: 0 !important;
+      gap: 14px 28px; align-items: start;
+    }
+    & :is(.il-widgetzone, .il-widgetzone-ul) { display: contents !important; }
+    & .il-widget { grid-column: 1; float: none !important; width: auto !important; min-width: 0; margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+    & .itsl-cb-news { grid-row: 1 / span 3; }
+    & .itsl-cb-notifications { grid-column: 2; grid-row: 1; }
+    & .itsl-cb-tasks { grid-column: 2; grid-row: 2; }
+    & .itsl-cb-activities { grid-column: 2; grid-row: 3; }
+    & .il-widget :is(.il-widget-top, .il-widget-header, .il-widget-titleBlock) { height: auto !important; min-height: 0; padding: 0 !important; margin: 0 !important; background: transparent !important; border: 0 !important; }
+    & .il-widget :is(.il-widget-bottom, .il-widget-content, .itsl-widget-contentcontainer) { margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+    & .il-widget h2 { margin: 0 0 8px !important; font-size: 15px !important; line-height: 1.3; }
+
+    /* Ressourcer and Planer */
+    & .jl-room-shortcuts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 22px 0 26px; }
+    & .jl-room-shortcuts a {
+      position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4px;
+      min-height: 132px; padding: 22px 64px 22px 112px;
+      border: 1px solid transparent; border-bottom-width: 4px; border-radius: 22px;
+      text-decoration: none !important;
+      box-shadow: var(--jl-panel-shadow);
+      animation: jl-pop 650ms var(--jl-spring) backwards;
+      transition: var(--jl-ease-transitions);
+    }
+    & .jl-room-shortcuts .jl-go-files { --jl-ink: var(--jl-on-accent); background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box; }
+    & .jl-room-shortcuts .jl-go-plans {
+      --jl-ink: #FFFFFF; animation-delay: 60ms;
+      background: linear-gradient(#6E5A7B, #4A3A55) padding-box, linear-gradient(#A997B5 0%, #5D4A68 40%, #2A2031 100%) border-box;
+    }
+    & .jl-room-shortcuts a:hover { translate: 0 -4px; }
+    & .jl-room-shortcuts .jl-go-files:hover { background: var(--jl-accent-fill-hover) padding-box, var(--jl-accent-edge) border-box; }
+    & .jl-room-shortcuts .jl-go-plans:hover { background: linear-gradient(#7A6688, #52415E) padding-box, linear-gradient(#A997B5 0%, #5D4A68 40%, #2A2031 100%) border-box; }
+    & .jl-room-shortcuts a:active { scale: .97; transition: scale 90ms var(--jl-quick); }
+    /* the big icon, and an arrow that nudges on hover */
+    & .jl-room-shortcuts a::before {
+      content: ""; position: absolute; left: 34px; top: 50%; translate: 0 -50%; width: 50px; height: 50px; background-color: var(--jl-ink);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 3a1 1 0 0 1 1-1h4l1.5 2H14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    & .jl-room-shortcuts .jl-go-plans::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm1 3h8v1.5H4zm0 3.3h8v1.5H4zm0 3.2h5V12H4z'/%3E%3C/svg%3E");
+    }
+    & .jl-room-shortcuts a::after {
+      content: ""; position: absolute; right: 26px; top: 50%; translate: 0 -50%; width: 22px; height: 22px; background-color: var(--jl-ink);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.7 2.3 4.3 3.7 8.6 8l-4.3 4.3 1.4 1.4L11.4 8z'/%3E%3C/svg%3E") center / contain no-repeat;
+      transition: translate 650ms var(--jl-spring);
+    }
+    & .jl-room-shortcuts a:hover::after { translate: 6px -50%; }
+    & .jl-room-shortcuts strong { color: var(--jl-ink); font-size: 26px; font-weight: 700; letter-spacing: -.015em; line-height: 1.15; }
+    & .jl-room-shortcuts small { color: var(--jl-ink); opacity: .82; font-size: 14px; }
+
+    /* Opslag: the wide column, easy to read */
+    & .itsl-cb-news h2 { margin-bottom: 12px !important; font-size: 19px !important; }
+    & .itsl-cb-news .itsl-widget-content-ul { display: flex; flex-direction: column; gap: 14px; margin: 0 !important; padding: 0 !important; }
+    & .itsl-cb-news .itsl-cb-news-item-lightbulletin { margin: 0 !important; padding: 18px 22px !important; border-radius: 18px !important; }
+    & .itsl-cb-news .itsl-cb-news-item-lightbulletin > div { width: auto !important; padding: 0 !important; margin: 0 !important; }
+    & .itsl-light-bulletins-list-item-text { font-size: 14.5px; line-height: 1.6; }
+    & .itsl-cb-news img:not(.prom-avatar__image) { max-height: 340px; width: auto; max-width: 100%; border-radius: 12px; }
+
+    /* Seneste ændringer: a short feed in one panel */
+    & .itsl-cb-notifications a.ccl-iconlink { display: none !important; }
+    & .itsl-notifications {
+      max-height: 400px; overflow: auto; margin: 0 !important; padding: 4px !important; list-style: none;
+      border: 1px solid transparent; border-radius: 16px;
+      background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box;
+      box-shadow: var(--jl-soft-shadow);
+    }
+    & .itsl-notifications .itsl-notification {
+      margin: 0 !important; padding: 9px 12px !important; border: 0 !important; border-bottom: 1px solid var(--jl-divider) !important;
+      border-radius: 0 !important; background: transparent !important; box-shadow: none !important; translate: none !important;
+      content-visibility: visible; font-size: 13px; line-height: 1.35;
+    }
+    & .itsl-notifications .itsl-notification:last-child { border-bottom: 0 !important; }
+    & .itsl-notification :is(.itsl-notification__title, .date, .itsl-notification-elements) { width: auto !important; height: auto !important; margin: 0 !important; padding: 0 !important; }
+    & .itsl-notification .date { color: var(--jl-muted); font-size: 11.5px; }
+    & .itsl-notification-elements { margin-top: 3px !important; }
+    & .itsl-notification-elements a { font-weight: 600; text-decoration: none !important; }
+    & .itsl-notification-elements a:hover { text-decoration: underline !important; }
+    & .itsl-latestchanges-pagination { padding: 6px 0 0 !important; font-size: 12px; }
+
+    /* Opgaver and Begivenheder: small, out of the way */
+    & .tasklist2, & .prom-events {
+      padding: 10px 12px !important; margin: 0 !important;
+      border: 1px solid transparent; border-radius: 16px;
+      background: var(--jl-panel-fill) padding-box, var(--jl-panel-edge) border-box;
+      box-shadow: var(--jl-soft-shadow);
+    }
+    & .tasklist2_header, & .prom-events__header { display: flex; align-items: center; justify-content: space-between; min-height: 0 !important; height: auto !important; margin: 0 0 6px !important; padding: 0 !important; }
+    & :is(.tasklist2_header h2, .prom-events__heading, .prom-events__heading *) { margin: 0 !important; font-size: 14px !important; line-height: 1.3; }
+    & .prom-events__header :is(img, svg) { max-width: 16px; max-height: 16px; }
+    & .tasklist2_header .buttons_wrapper { width: auto !important; height: auto !important; }
+    & .tasklist2_header button { height: auto !important; padding: 2px 6px !important; font-size: 12px !important; }
+    & .tasklist2_container { margin: 0 !important; padding: 0 !important; }
+    & .tasklist2_backto { display: none; }
+    & .prom-collapsible-list__button { font-size: 12.5px !important; }
+    & .prom-collapsible-list__innerbutton { min-height: 0 !important; height: auto !important; padding: 2px 10px !important; }
+    & .prom-events .content-block { min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 2px 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+    & .prom-events .prom-empty-state { min-height: 0 !important; margin: 0 !important; padding: 2px 0 !important; }
+    & .prom-events :is(.prom-empty-state__icon, .prom-empty-state__description) { display: none !important; }
+    & .prom-events .prom-empty-state__title { margin: 0 !important; color: var(--jl-muted) !important; font-size: 12.5px !important; font-weight: 500 !important; }
+
+    /* narrower windows: one column, with what's new before the posts */
+    @media (max-width: 1040px) {
+      & .il-widgetslayout { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+      & .il-widget { grid-column: 1 !important; grid-row: auto !important; }
+      & .itsl-cb-news { order: 1; }
+    }
+    @media (max-width: 720px) {
+      & .jl-room-shortcuts { grid-template-columns: 1fr; }
+    }
+  }
+  & .jl-room-shortcuts { display: none; }
+  &[data-jl-room] .jl-room-shortcuts { display: grid; }
+
+  /* ---------- a click answers at once, while the server builds the next page (content.js sets these) ---------- */
+  &[data-jl-loading] { cursor: progress; }
+  &[data-jl-loading]::after {
+    content: ""; position: fixed; z-index: 2147483647; inset: 0 0 auto; height: 3px;
+    border-radius: 0 3px 3px 0; transform-origin: left;
+    background: var(--jl-accent-fill);
+    box-shadow: 0 0 10px var(--jl-accent);
+    animation: jl-load 6s var(--jl-quick) forwards;
+  }
+  & .jl-pending { animation: jl-breathe 700ms ease-in-out infinite alternate !important; }
+  /* the pill hops to the tab you clicked straight away */
+  & .prom-navigation__item.jl-pending:not(.combined), & .prom-navigation__item.jl-pending .prom-navigation__item-text--combined {
+    background: var(--jl-selected-fill) padding-box, var(--jl-raised-edge) border-box !important; color: var(--jl-text) !important;
+  }
+  & .prom-navigation__items:has(.jl-pending) .prom-navigation__item--selected:not(.jl-pending, .combined),
+  & .prom-navigation__items:has(.jl-pending) .prom-navigation__item--selected:not(.jl-pending) .prom-navigation__item-text--combined {
+    background: none !important; color: var(--jl-muted) !important; font-weight: 400;
+  }
+  /* a page that was ready before the click still arrives with a little bounce */
+  &[data-jl-arrived] :is(main, .l-main-content) { animation: jl-enter 420ms var(--jl-bouncy); }
+}
+
+html[data-jl="dark"] {
+  /* the site's icons are dark-grey SVGs, made for a white page */
+  & img:is([src*="--gray--"], [src*="--black"], [src*="--brand--"]) { filter: var(--jl-icon-filter); }
+  /* card glyphs come in the course's dark shade */
+  & :is(.coursecard__favouriteToggle, .coursecard__editOptions) { filter: brightness(1.5) saturate(1.1); }
+
+  & [style*="background-color: rgb(255, 255, 255)"], & [style*="background-color: white"], & [style*="background-color: #fff"] { background-color: transparent !important; }
+  & [style*="color: rgb(0, 0, 0)"]:not([style*="background-color: rgb(0, 0, 0)"]), & [style*="color: #000"], & [style*="color: black"], & font[color="#000000"] { color: var(--jl-text) !important; }
+}
+
+@keyframes jl-pop {
+  from { scale: .82; opacity: 0; }
+  25% { opacity: 1; }
+}
+@keyframes jl-soft-pop { from { scale: .9; } }
+@keyframes jl-check { from { scale: .55; } }
+@keyframes jl-breathe { from { scale: .97; } to { scale: .99; } }
+@keyframes jl-ring {
+  25% { rotate: -14deg; }
+  50% { rotate: 10deg; }
+  75% { rotate: -5deg; }
+}
+@keyframes jl-load {
+  from { transform: scaleX(0); }
+  12% { transform: scaleX(.4); }
+  to { transform: scaleX(.94); }
+}
+@keyframes jl-slide-in {
+  from { translate: 56px 0; opacity: 0; }
+  30% { opacity: 1; }
+}
+@keyframes jl-enter {
+  from { translate: 0 10px; opacity: 0; }
+  30% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-jl] *, html[data-jl]::after { animation: none !important; transition: none !important; scale: none !important; }
+}
+html:not([data-jl]) .jl-history { display: none; }
+html:not([data-jl-room]) .jl-room-home { display: none; }
+html:not([data-jl]) .jl-tree { display: none; }

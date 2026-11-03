@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jlearning: et pænere og hurtigere itslearning</title>
+<meta name="description" content="En gratis Chrome-udvidelse, der giver itslearning et nyt udseende, en mere overskuelig rumvisning, et mappetræ og hurtigere mapper.">
+<meta name="theme-color" content="#0F0B12">
+<meta property="og:title" content="jlearning">
+<meta property="og:description" content="Et pænere og hurtigere itslearning. Gratis Chrome-udvidelse.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jlearning.pages.dev/">
+<meta property="og:image" content="https://jlearning.pages.dev/icon-128.png">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+  /* The same palette and raised surfaces as the extension's tokens.css. */
+  :root {
+    color-scheme: dark;
+    --win: #0F0B12; --text: #EFEBF2; --muted: #A196AB; --faint: #746A7E; --divider: #221C27;
+    --accent: #F5821F; --accent-text: #FFAE6B; --on-accent: #201006;
+    --raised-fill: linear-gradient(#2B2432, #1C1721);
+    --raised-fill-hover: linear-gradient(#352C3D, #221C28);
+    --raised-edge: linear-gradient(#5E5369 0%, #2C2533 35%, #1E1924 80%, #040305 100%);
+    --panel-fill: linear-gradient(#1A151F, #15111A);
+    --panel-edge: linear-gradient(#352D3D, #1E1924 30%, #060408 100%);
+    --inset-fill: #0C090E;
+    --inset-edge: linear-gradient(#030204 0%, #1A151F 50%, #342C3B 100%);
+    --accent-fill: linear-gradient(#FF9A45, #EE7410);
+    --accent-fill-hover: linear-gradient(#FFA758, #F67F1E);
+    --accent-edge: linear-gradient(#FFC797 0%, #E0700F 40%, #8A4207 100%);
+    --plum-fill: linear-gradient(#6E5A7B, #4A3A55);
+    --plum-edge: linear-gradient(#A997B5 0%, #5D4A68 40%, #2A2031 100%);
+    --shadow: 0 6px 22px rgba(0, 0, 0, .55);
+    --soft-shadow: 0 3px 10px rgba(0, 0, 0, .5);
+    --bar: rgba(239, 235, 242, .13);
+    /* Friis's ElasticEase, sampled */
+    --spring: linear(0, .071, .156, .251, .35, .452, .55, .645, .732, .81, .878, .935, .98, 1.015, 1.039, 1.054, 1.06, 1.059, 1.052, 1.041, 1.027, 1.012, .998, .985, .975, .969, .965, .966, .969, .974, .98, .987, .994, 1, 1.004, 1.007, 1.008, 1.008, 1.006, 1.004, 1.002, 1);
+    --quick: cubic-bezier(.25, .46, .45, .94);
+    --gutter: clamp(16px, 5vw, 64px);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --win: #ECE9EF; --text: #1B161F; --muted: #5E5468; --faint: #8D8497; --divider: #DAD5DF;
+      --accent: #E96F0C; --accent-text: #B95405;
+      --raised-fill: linear-gradient(#FFFFFF, #F3F1F5);
+      --raised-fill-hover: linear-gradient(#FFFFFF, #EBE8EE);
+      --raised-edge: linear-gradient(#FFFFFF 0%, #DFDBE4 35%, #CFCAD6 80%, #A69FB0 100%);
+      --panel-fill: linear-gradient(#FEFDFE, #F8F7FA);
+      --panel-edge: linear-gradient(#FFFFFF 0%, #E4E0E9 30%, #C1BBC9 100%);
+      --inset-fill: #F0EDF3;
+      --inset-edge: linear-gradient(#BBB5C4 0%, #E0DCE5 50%, #FFFFFF 100%);
+      --accent-edge: linear-gradient(#FFC797 0%, #E0700F 40%, #B5590B 100%);
+      --shadow: 0 6px 24px rgba(60, 50, 75, .16);
+      --soft-shadow: 0 3px 10px rgba(60, 50, 75, .2);
+      --bar: rgba(27, 22, 31, .1);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--win); color: var(--text);
+    font: 16px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-text); text-underline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  h1, h2, h3 { margin: 0; letter-spacing: -.015em; }
+  p { margin: 0; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  header { display: flex; align-items: center; gap: 10px; padding: 20px 0; font-weight: 650; font-size: 18px; }
+  header img { width: 34px; height: 34px; display: block; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px;
+    border: 1px solid transparent; border-bottom-width: 4px; border-radius: 14px;
+    font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1; text-decoration: none; cursor: pointer;
+    background: var(--raised-fill) padding-box, var(--raised-edge) border-box; color: var(--text);
+    transition: scale 650ms var(--spring), translate 650ms var(--spring);
+  }
+  .btn:hover { translate: 0 -2px; background: var(--raised-fill-hover) padding-box, var(--raised-edge) border-box; }
+  .btn:active { scale: .95; transition: scale 90ms var(--quick); }
+  .btn.main { background: var(--accent-fill) padding-box, var(--accent-edge) border-box; color: var(--on-accent); box-shadow: var(--soft-shadow); font-size: 17px; }
+  .btn.main:hover { background: var(--accent-fill-hover) padding-box, var(--accent-edge) border-box; }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+
+  /* ---------- hero ---------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding: clamp(20px, 5vh, 56px) 0 clamp(40px, 7vh, 80px); }
+  h1 { font-size: clamp(36px, 5.2vw, 60px); line-height: 1.05; font-weight: 700; }
+  .lede { margin: 18px 0 26px; color: var(--muted); font-size: clamp(17px, 1.6vw, 19px); max-width: 32em; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .note { color: var(--muted); font-size: 14px; }
+
+  /* the illustration: the room view, drawn, with nobody's real courses in it */
+  .shot {
+    padding: 16px; border: 1px solid transparent; border-radius: 22px;
+    background: var(--panel-fill) padding-box, var(--panel-edge) border-box; box-shadow: var(--shadow);
+    animation: pop 800ms var(--spring) backwards;
+  }
+  .shot-top { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .arrow { flex: none; width: 34px; height: 30px; border: 1px solid transparent; border-bottom-width: 3px; border-radius: 9px; background: var(--accent-fill) padding-box, var(--accent-edge) border-box; display: grid; place-items: center; }
+  .arrow svg { width: 12px; height: 12px; fill: var(--on-accent); }
+  .shot-title { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px 12px; border: 1px solid transparent; border-bottom-width: 3px; border-radius: 11px; background: var(--raised-fill) padding-box, var(--raised-edge) border-box; font-size: 13px; font-weight: 650; white-space: nowrap; overflow: hidden; }
+  .shot-title svg { flex: none; width: 13px; height: 13px; fill: var(--accent); }
+  .switch { position: relative; flex: none; margin-left: auto; width: 38px; height: 22px; border-radius: 11px; background: var(--accent-fill); }
+  .switch::after { content: ""; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--raised-fill); }
+  .shot-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .shot-card { display: flex; align-items: center; gap: 10px; padding: 16px; border: 1px solid transparent; border-bottom-width: 3px; border-radius: 14px; font-weight: 700; font-size: clamp(14px, 1.5vw, 18px); box-shadow: var(--soft-shadow); }
+  .shot-card svg { flex: none; width: 24px; height: 24px; fill: currentColor; }
+  .shot-card.files { background: var(--accent-fill) padding-box, var(--accent-edge) border-box; color: var(--on-accent); }
+  .shot-card.plans { background: var(--plum-fill) padding-box, var(--plum-edge) border-box; color: #fff; }
+  .shot-cols { display: grid; grid-template-columns: 1.7fr 1fr; gap: 10px; }
+  .shot-box { padding: 12px; border: 1px solid transparent; border-radius: 12px; background: var(--raised-fill) padding-box, var(--raised-edge) border-box; margin-bottom: 8px; }
+  .line { display: block; height: 8px; margin: 7px 0; border-radius: 4px; background: var(--bar); }
+  .line.head { width: 40%; height: 10px; }
+  .l90 { width: 90%; } .l75 { width: 75%; } .l60 { width: 60%; }
+
+  /* ---------- features ---------- */
+  h2 { font-size: clamp(26px, 3vw, 34px); font-weight: 700; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; margin: 24px 0 clamp(44px, 7vh, 80px); padding: 0; list-style: none; }
+  .features li {
+    padding: 20px 22px; border: 1px solid transparent; border-radius: 18px;
+    background: var(--panel-fill) padding-box, var(--panel-edge) border-box; box-shadow: var(--soft-shadow);
+    transition: translate 650ms var(--spring);
+  }
+  .features li:hover { translate: 0 -3px; }
+  .features h3 { font-size: 17px; font-weight: 650; margin-bottom: 4px; }
+  .features p { color: var(--muted); font-size: 15px; }
+
+  /* ---------- the guide, shown after the download ---------- */
+  #guide { padding: 8px 0 clamp(44px, 7vh, 80px); scroll-margin-top: 16px; }
+  #guide[hidden] { display: none; }
+  #guide:not([hidden]) { animation: rise 650ms var(--spring) backwards; }
+  .guide-lede { margin: 8px 0 22px; color: var(--muted); max-width: 44em; }
+  .steps { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+  .steps > li {
+    position: relative; padding: 18px 22px 20px 78px; counter-increment: step;
+    border: 1px solid transparent; border-radius: 18px;
+    background: var(--panel-fill) padding-box, var(--panel-edge) border-box; box-shadow: var(--soft-shadow);
+  }
+  .steps > li::before {
+    content: counter(step); position: absolute; left: 20px; top: 18px; width: 42px; height: 42px; display: grid; place-items: center;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 12px;
+    background: var(--accent-fill) padding-box, var(--accent-edge) border-box; color: var(--on-accent); font-weight: 700; font-size: 18px;
+  }
+  .steps h3 { font-size: 18px; font-weight: 650; margin-bottom: 3px; }
+  .steps p { color: var(--muted); }
+  .steps strong { color: var(--text); font-weight: 600; }
+  .copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+  code {
+    padding: 9px 13px; border: 1px solid transparent; border-top-width: 2px; border-radius: 10px;
+    background: linear-gradient(var(--inset-fill), var(--inset-fill)) padding-box, var(--inset-edge) border-box;
+    font: 500 14px "Cascadia Mono", Consolas, monospace; user-select: all;
+  }
+  .btn.small { min-height: 40px; padding: 0 14px; font-size: 14px; border-bottom-width: 3px; border-radius: 10px; }
+  .after { margin-top: 18px; padding: 18px 22px; border: 1px solid transparent; border-radius: 16px; background: linear-gradient(var(--inset-fill), var(--inset-fill)) padding-box, var(--inset-edge) border-box; color: var(--muted); font-size: 15px; }
+  .after p + p { margin-top: 8px; }
+  .after strong { color: var(--text); font-weight: 600; }
+
+  footer { padding: 22px 0 36px; border-top: 1px solid var(--divider); color: var(--muted); font-size: 14px; }
+
+  @keyframes pop { from { scale: .92; opacity: 0; } 30% { opacity: 1; } }
+  @keyframes rise { from { translate: 0 24px; opacity: 0; } 30% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .steps > li { padding: 70px 18px 18px; }
+    .actions .btn { width: 100%; }
+    .shot-cols { grid-template-columns: minmax(0, 1fr); }
+    .shot-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><img src="logo.svg" alt="" width="34" height="34">jlearning</header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Et pænere og hurtigere itslearning.</h1>
+        <p class="lede">En gratis Chrome-udvidelse, der giver itslearning et nyt udseende, sætter dine filer og planer forrest og gør mapperne hurtigere at åbne.</p>
+        <div class="actions">
+          <a class="btn main" id="download" href="https://github.com/jxfriis/jlearning/releases/latest/download/jlearning.zip">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7 1h2v7.2l2.6-2.6L13 7l-5 5-5-5 1.4-1.4L7 8.2zM2 13h12v2H2z"/></svg>
+            Hent jlearning
+          </a>
+          <a class="note" href="#guide" id="show-guide">Vis installationsguiden</a>
+        </div>
+        <p class="note" style="margin-top:14px">Til Chrome og Edge på computer. Tager et par minutter at installere.</p>
+      </div>
+
+      <div class="shot" role="img" aria-label="Tegning af et rum i jlearning: to store knapper til Ressourcer og Planer, med opslag og seneste ændringer nedenunder">
+        <div class="shot-top">
+          <span class="arrow"><svg viewBox="0 0 16 16"><path d="M10.3 2.3 11.7 3.7 7.4 8l4.3 4.3-1.4 1.4L4.6 8z"/></svg></span>
+          <span class="arrow"><svg viewBox="0 0 16 16"><path d="M5.7 2.3 4.3 3.7 8.6 8l-4.3 4.3 1.4 1.4L11.4 8z"/></svg></span>
+          <span class="shot-title">Dit rum <svg viewBox="0 0 16 16"><path d="M8 1.2.8 7.6l1 1.1L3 7.7V14a1 1 0 0 0 1 1h2.8v-4.2h2.4V15H12a1 1 0 0 0 1-1V7.7l1.2 1 1-1.1z"/></svg></span>
+          <span class="switch"></span>
+        </div>
+        <div class="shot-cards">
+          <div class="shot-card files"><svg viewBox="0 0 16 16"><path d="M1 3a1 1 0 0 1 1-1h4l1.5 2H14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z"/></svg>Ressourcer</div>
+          <div class="shot-card plans"><svg viewBox="0 0 16 16"><path d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm1 3h8v1.5H4zm0 3.3h8v1.5H4zm0 3.2h5V12H4z"/></svg>Planer</div>
+        </div>
+        <div class="shot-cols">
+          <div>
+            <div class="shot-box"><span class="line head"></span><span class="line l90"></span><span class="line l75"></span><span class="line l60"></span></div>
+            <div class="shot-box"><span class="line head"></span><span class="line l75"></span><span class="line l90"></span></div>
+          </div>
+          <div>
+            <div class="shot-box"><span class="line head"></span><span class="line l90"></span><span class="line l60"></span><span class="line l75"></span></div>
+            <div class="shot-box"><span class="line head"></span><span class="line l60"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="guide" hidden>
+      <h2>Sådan installerer du den</h2>
+      <p class="guide-lede">Din download er startet. Udvidelsen ligger ikke i Chrome Web Store, så du indlæser den selv. Det er kun disse fem trin.</p>
+      <ol class="steps">
+        <li>
+          <h3>Pak filen ud</h3>
+          <p>Find <strong>jlearning.zip</strong> i din Overførsler-mappe, højreklik og vælg <strong>Udpak alle</strong>. Læg mappen et sted, hvor den kan blive liggende, for Chrome bruger den hele tiden.</p>
+        </li>
+        <li>
+          <h3>Åbn udvidelsessiden</h3>
+          <p>Kopiér adressen, sæt den ind i adressefeltet i Chrome, og tryk Enter.</p>
+          <div class="copy-row">
+            <code id="address">chrome://extensions</code>
+            <button class="btn small" id="copy" type="button">Kopiér</button>
+          </div>
+          <p style="margin-top:10px">Bruger du Edge, er adressen <strong>edge://extensions</strong>.</p>
+        </li>
+        <li>
+          <h3>Slå Udviklertilstand til</h3>
+          <p>Tænd for kontakten <strong>Udviklertilstand</strong> øverst til højre. I Edge står den i menuen til venstre.</p>
+        </li>
+        <li>
+          <h3>Indlæs mappen</h3>
+          <p>Tryk på <strong>Indlæs upakket</strong>, og vælg den udpakkede mappe, altså den hvor filen <strong>manifest.json</strong> ligger direkte.</p>
+        </li>
+        <li>
+          <h3>Åbn itslearning</h3>
+          <p>Udvidelsen er aktiv med det samme. Åbn itslearning, eller opdater siden, hvis den allerede er åben. Er kontakten ved jlearning slået fra, så slå den til.</p>
+        </li>
+      </ol>
+      <div class="after">
+        <p><strong>Vil du have knappen frem?</strong> Tryk på puslespilsikonet i Chrome og på nålen ved jlearning. Her vælger du mørk, lys eller auto, og du kan slå det hele fra.</p>
+        <p><strong>Ny version?</strong> Hent den igen, erstat indholdet i mappen, og tryk på genindlæs-pilen ved jlearning på udvidelsessiden.</p>
+        <p><strong>Advarsel fra Chrome?</strong> Chrome kan minde dig om, at udvidelser i udviklertilstand er slået til. Det er normalt for udvidelser uden for Web Store.</p>
+      </div>
+    </section>
+
+    <h2>Det får du</h2>
+    <ul class="features">
+      <li><h3>Nyt udseende</h3><p>Hævede knapper, elastiske animationer og mørk eller lys tilstand på hele itslearning.</p></li>
+      <li><h3>Overskuelige rum</h3><p>Ressourcer og Planer står forrest, opslag får pladsen, og resten ligger samlet under Mere. Du kan slå det fra med en kontakt.</p></li>
+      <li><h3>Nemmere at finde filer</h3><p>Et foldbart mappetræ, en tydelig sti, frem- og tilbageknapper, og mapper først med det nyeste øverst.</p></li>
+      <li><h3>Hurtigere mapper</h3><p>Indholdet hentes, så snart musen rammer en mappe, så den åbner med det samme.</p></li>
+      <li><h3>Bedre PDF og PowerPoint</h3><p>Større knapper, søgning på dansk og en knap til at åbne PDF'en i en ny fane. Du kan altid skifte tilbage til den normale visning.</p></li>
+      <li><h3>Dine data bliver hos dig</h3><p>Ingen konto og ingen sporing. Udvidelsen taler kun med itslearning, og dine indstillinger ligger i din egen browser.</p></li>
+    </ul>
+  </main>
+
+  <footer>
+    jlearning er et uafhængigt hobbyprojekt og har ingen tilknytning til itslearning. Bygget og testet på ek.itslearning.com.
+    <a href="https://github.com/jxfriis/jlearning">Kildekoden ligger på GitHub</a>.
+  </footer>
+</div>
+<script>
+  const guide = document.getElementById('guide');
+  const lede = guide.querySelector('.guide-lede');
+  const manualLede = 'Udvidelsen ligger ikke i Chrome Web Store, så du indlæser den selv. Det er kun disse fem trin.';
+  const show = () => {
+    guide.hidden = false;
+    // after the browser has begun the download, so the move doesn't fight it
+    setTimeout(() => guide.scrollIntoView(), 150);
+  };
+  document.getElementById('download').addEventListener('click', () => show());
+  document.getElementById('show-guide').addEventListener('click', event => {
+    event.preventDefault();
+    if (guide.hidden) lede.textContent = manualLede;
+    show();
+  });
+  const copy = document.getElementById('copy');
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('address').textContent);
+      copy.textContent = 'Kopieret';
+    } catch {
+      copy.textContent = 'Markér og kopiér selv';
+    }
+    setTimeout(() => { copy.textContent = 'Kopiér'; }, 2000);
+  });
+</script>
+</body>
+</html>

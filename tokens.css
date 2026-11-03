@@ -1,0 +1,88 @@
+/* The palette, shared by the skin and the readers. Friis tinted with aubergine, its accent the itslearning orange. */
+html[data-jl="dark"] {
+  color-scheme: dark;
+  --jl-win: #0F0B12;
+  --jl-text: #EFEBF2;
+  --jl-muted: #A196AB;
+  --jl-faint: #746A7E;
+  --jl-accent: #F5821F;
+  --jl-accent-text: #FFAE6B;
+  --jl-on-accent: #201006;
+  --jl-ok: #3DD68C;
+  --jl-line: #2A2330;
+  --jl-divider: #221C27;
+  --jl-scrim: rgba(15, 11, 18, .76);
+
+  --jl-raised-fill: linear-gradient(#2B2432, #1C1721);
+  --jl-raised-fill-hover: linear-gradient(#352C3D, #221C28);
+  --jl-raised-edge: linear-gradient(#5E5369 0%, #2C2533 35%, #1E1924 80%, #040305 100%);
+  --jl-panel-fill: linear-gradient(#1A151F, #15111A);
+  --jl-panel-edge: linear-gradient(#352D3D, #1E1924 30%, #060408 100%);
+  --jl-inset-fill: #0C090E;
+  --jl-inset-edge: linear-gradient(#030204 0%, #1A151F 50%, #342C3B 100%);
+  --jl-accent-fill: linear-gradient(#FF9A45, #EE7410);
+  --jl-accent-fill-hover: linear-gradient(#FFA758, #F67F1E);
+  --jl-accent-edge: linear-gradient(#FFC797 0%, #E0700F 40%, #8A4207 100%);
+  --jl-selected-fill: linear-gradient(#3F2F49, #2A2031);
+  --jl-hover: #1F1925;
+  --jl-thumb: #352D3C;
+  --jl-thumb-hover: #4F4559;
+  --jl-panel-shadow: 0 6px 22px rgba(0, 0, 0, .55);
+  --jl-soft-shadow: 0 3px 10px rgba(0, 0, 0, .5);
+  --jl-raised-flat: #241E2A;
+  --jl-raised-edges: #5E5369 #2C2533 #040305;
+  --jl-inset-edges: #030204 #1A151F #342C3B;
+  --jl-card-base: #1C1721;
+  --jl-card-lip: #040305;
+  --jl-card-top: 62%;
+  --jl-card-top-hover: 72%;
+  --jl-card-bottom: 26%;
+  --jl-card-sub: #D6CFDC;
+  --jl-switch-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z'/%3E%3C/svg%3E");
+  --jl-icon-filter: invert(.86) sepia(.12) hue-rotate(225deg);
+}
+
+html[data-jl="light"] {
+  color-scheme: light;
+  --jl-win: #ECE9EF;
+  --jl-text: #1B161F;
+  --jl-muted: #5E5468;
+  --jl-faint: #8D8497;
+  --jl-accent: #E96F0C;
+  --jl-accent-text: #B95405;
+  --jl-on-accent: #201006;
+  --jl-ok: #16A15C;
+  --jl-line: #DAD5DF;
+  --jl-divider: #E4E0E8;
+  --jl-scrim: rgba(50, 40, 60, .35);
+
+  --jl-raised-fill: linear-gradient(#FFFFFF, #F3F1F5);
+  --jl-raised-fill-hover: linear-gradient(#FFFFFF, #EBE8EE);
+  --jl-raised-edge: linear-gradient(#FFFFFF 0%, #DFDBE4 35%, #CFCAD6 80%, #A69FB0 100%);
+  --jl-panel-fill: linear-gradient(#FEFDFE, #F8F7FA);
+  --jl-panel-edge: linear-gradient(#FFFFFF 0%, #E4E0E9 30%, #C1BBC9 100%);
+  --jl-inset-fill: #F0EDF3;
+  --jl-inset-edge: linear-gradient(#BBB5C4 0%, #E0DCE5 50%, #FFFFFF 100%);
+  --jl-accent-fill: linear-gradient(#FF9A45, #EE7410);
+  --jl-accent-fill-hover: linear-gradient(#FFA758, #F67F1E);
+  --jl-accent-edge: linear-gradient(#FFC797 0%, #E0700F 40%, #B5590B 100%);
+  --jl-selected-fill: linear-gradient(#FBF1E9, #F8E2CF);
+  --jl-hover: #F1EEF4;
+  --jl-thumb: #C9C3D0;
+  --jl-thumb-hover: #ACA5B5;
+  --jl-panel-shadow: 0 6px 24px rgba(60, 50, 75, .16);
+  --jl-soft-shadow: 0 3px 10px rgba(60, 50, 75, .2);
+  --jl-raised-flat: #F8F6FA;
+  --jl-raised-edges: #FFFFFF #DFDBE4 #A69FB0;
+  --jl-inset-edges: #BBB5C4 #E0DCE5 #FFFFFF;
+  --jl-card-base: #FFFFFF;
+  --jl-card-lip: #A69FB0;
+  --jl-card-top: 58%;
+  --jl-card-top-hover: 68%;
+  --jl-card-bottom: 28%;
+  --jl-card-sub: #3E3548;
+  --jl-switch-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5'/%3E%3Cpath d='M12 1v4M12 19v4M1 12h4M19 12h4M4.2 4.2 7 7M17 17l2.8 2.8M4.2 19.8 7 17M17 7l2.8-2.8' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --jl-icon-filter: none;
+}
+
+html[data-jl] { --jl-font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; }
