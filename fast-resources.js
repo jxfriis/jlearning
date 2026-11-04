@@ -30,21 +30,34 @@
     if (!key) return siteFetch.apply(this, arguments);
     const kept = answers.get(key);
     if (kept && Date.now() - kept.at < KEEP_MS) {
-      return kept.answer.then(response => response.clone(), () => siteFetch.call(window, input, init));
+      return kept.answer.then(response => arrange(key, response.clone()), () => siteFetch.call(window, input, init));
     }
-    const request = siteFetch.apply(this, arguments).then(response => arrange(key, response));
+    const request = siteFetch.apply(this, arguments);
     remember(key, request.then(response => response.clone()));
-    return request;
+    return request.then(response => arrange(key, response));
   };
 
-  // Newest changed first, with folders above files. The server has already sorted by date, so moving the folders up
-  // keeps each group in that order. Only for this sort: any other one you choose stays as the server sends it.
+  // Favorite folders, then other folders, then files. The server has already sorted by date, so this keeps each group in
+  // that order. Only for this sort and the first view of a folder: any other sort you choose stays as the server sends
+  // it. Done as each answer is handed over, so a new favorite counts at once. content.js keeps the list in localStorage.
+  const favourites = () => {
+    try { return new Set(JSON.parse(localStorage.getItem('jl-fav-folders')) || []); } catch { return new Set(); }
+  };
+  const ordered = items => {
+    const favs = favourites();
+    const isFav = item => favs.has(String(item.elementId));
+    return [...items.filter(isFav), ...items.filter(item => item.isFolder && !isFav(item)), ...items.filter(item => !item.isFolder && !isFav(item))];
+  };
   async function arrange(key, response) {
-    if (!response.ok || !decodeURIComponent(key).endsWith('sortBy=ModifiedDT:Descending')) return response;
-    const list = await response.clone().json();
-    if (!Array.isArray(list.elements)) return response;
-    list.elements = [...list.elements.filter(item => item.isFolder), ...list.elements.filter(item => !item.isFolder)];
-    return new Response(JSON.stringify(list), { status: response.status, statusText: response.statusText, headers: response.headers });
+    const plain = decodeURIComponent(key);
+    const sorted = plain.endsWith('sortBy=ModifiedDT:Descending');
+    const first = /\/folder\/\d+\/v1$/.test(plain);
+    if (!response.ok || (!sorted && !first)) return response;
+    const answer = await response.clone().json();
+    const list = sorted ? answer : answer.folderElements;
+    if (!Array.isArray(list?.elements)) return response;
+    list.elements = ordered(list.elements);
+    return new Response(JSON.stringify(answer), { status: response.status, statusText: response.statusText, headers: response.headers });
   }
 
   function prepare(folder) {
@@ -55,7 +68,7 @@
     ]) {
       const key = keyFor(path);
       const kept = answers.get(key);
-      if (!kept || Date.now() - kept.at >= KEEP_MS) remember(key, siteFetch.call(window, path).then(response => arrange(key, response)));
+      if (!kept || Date.now() - kept.at >= KEEP_MS) remember(key, siteFetch.call(window, path));
     }
   }
 

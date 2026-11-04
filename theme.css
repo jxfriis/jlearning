@@ -105,28 +105,43 @@ html[data-jl] {
 
   /* ---------- course cards ---------- */
   & :is(main, .main, .l-main, .l-main-content, .coursecards, .content-area) { background: transparent !important; }
-  /* each card is a raised surface in its course's own colour, lit from the top like Friis's accent buttons */
+  /* each card is a raised button with its course's colour as a lit label on top, and the date on a plain foot below */
   & .coursecard > .coursecard__main {
     --jl-c: var(--jl-course, var(--jl-accent));
-    position: relative; overflow: hidden;
+    position: relative; display: flex; flex-direction: column; box-sizing: border-box; height: 100%; min-height: 172px;
+    padding: 0 0 44px !important; overflow: visible;
     color: var(--jl-text) !important;
-    border: 1px solid transparent !important; border-bottom-width: 3px !important; border-radius: 16px !important;
-    background:
-      linear-gradient(color-mix(in srgb, var(--jl-c) var(--jl-card-top), var(--jl-card-base)), color-mix(in srgb, var(--jl-c) var(--jl-card-bottom), var(--jl-card-base))) padding-box,
-      linear-gradient(color-mix(in srgb, var(--jl-c) 75%, #fff) 0%, color-mix(in srgb, var(--jl-c) 55%, var(--jl-card-base)) 35%, var(--jl-card-lip) 100%) border-box !important;
+    border: 1px solid transparent !important; border-bottom-width: 4px !important; border-radius: 18px !important;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
     box-shadow: var(--jl-soft-shadow);
     text-decoration: none;
     transition: var(--jl-ease-transitions);
   }
   & .coursecard > .coursecard__main:hover {
-    --jl-card-top: var(--jl-card-top-hover);
-    translate: 0 -3px;
+    background: var(--jl-raised-fill-hover) padding-box, var(--jl-raised-edge) border-box !important;
+    translate: 0 -4px;
     box-shadow: var(--jl-panel-shadow);
   }
   & .coursecard > .coursecard__main::before { display: none !important; }
-  & .coursecard__title { color: var(--jl-text) !important; font-size: 15px; line-height: 1.3; }
-  & .coursecard-lastupdated { color: var(--jl-card-sub) !important; font-size: 12px; padding: 4px 8px 0 !important; }
-  & .coursecard__teachers { color: var(--jl-card-sub) !important; font-size: 12px; }
+  & .coursecard__top { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0 !important; padding: 0 !important; }
+  & .coursecard__image { display: block; flex: none; width: 100%; height: 112px; aspect-ratio: auto; margin: 0 !important; object-fit: cover; border-radius: 17px 17px 0 0; }
+  & .coursecard__header {
+    position: static; flex: 1; display: flex; gap: 8px; margin: 0 !important; padding: 14px 10px 14px 16px !important;
+    border-radius: 17px 17px 0 0;
+    background: linear-gradient(115deg, color-mix(in srgb, var(--jl-c) 90%, #fff), var(--jl-c) 60%, color-mix(in srgb, var(--jl-c) 93%, #000));
+    transition: filter 120ms;
+  }
+  & .coursecard__image + .coursecard__header { border-radius: 0; }
+  & .coursecard__main:hover .coursecard__header { filter: brightness(1.05) saturate(1.08); }
+  & .coursecard__header-left { flex: 1; min-width: 0; padding: 0 !important; margin: 0 !important; }
+  & .coursecard__title { margin: 0 !important; padding: 0 !important; color: #1B161F !important; font-size: 16px; font-weight: 650; line-height: 1.28; }
+  & .coursecard__teachers { color: #1B161F !important; opacity: .75; font-size: 12px; }
+  /* the foot */
+  & .coursecard-lastupdated { position: absolute; left: 16px; bottom: 12px; padding: 0 !important; margin: 0 !important; color: var(--jl-muted) !important; font-size: 12px; line-height: 20px; }
+  & .coursecard__button-container { position: static; flex: none; display: block; margin: -4px 0 0 !important; padding: 0 !important; }
+  & .coursecard__button-container > .prom-button-dropdown { position: absolute; right: 8px; bottom: 4px; }
+  & .coursecard__favouriteToggle { filter: brightness(0) opacity(.72); }
+  & .coursecard__editOptions { width: 36px !important; height: 36px !important; filter: var(--jl-card-dots); }
 
   /* ---------- light/dark switch, added to the top bar by content.js ---------- */
   & .jl-switch {
@@ -482,7 +497,6 @@ html[data-jl] {
   & .jl-tree-heading { margin: 0 0 6px 6px; color: var(--jl-muted); font-size: 12px; font-weight: 600; }
   & .jl-tree ul { margin: 0; padding: 0; list-style: none; }
   & .jl-tree ul ul { margin-left: 15px; padding-left: 6px; border-left: 1px solid var(--jl-divider); }
-  & .jl-tree ul[hidden] { display: none; }
   & .jl-tree-row { display: flex; align-items: center; gap: 2px; min-height: 34px; margin-bottom: 1px; padding-right: 6px; border-radius: 10px; transition: var(--jl-ease-transitions); }
   & .jl-tree-row:hover { background: var(--jl-hover); translate: 2px 0; }
   & .jl-tree-row.jl-tree-current { background: var(--jl-selected-fill); }
@@ -549,6 +563,36 @@ html[data-jl] {
   /* a file has its own icon from the site, so it doesn't get a folder as well */
   & .prom-breadcrumbs__link-with-icon { padding-left: 32px !important; background-position: 11px center !important; }
   & .prom-breadcrumbs__link-with-icon::before { display: none; }
+
+  /* ---------- favorite folders: a star on the row, first in the list and at the top of the tree ---------- */
+  & .jl-fav-star {
+    position: relative; z-index: 1; flex: none; width: 34px; height: 34px; margin-left: auto; padding: 0; border: 0; border-radius: 9px; background: none; cursor: pointer;
+    transition: scale 650ms var(--jl-spring);
+  }
+  & .jl-fav-star::before {
+    content: ""; position: absolute; inset: 0; background-color: var(--jl-faint);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 4 4.4.6-3.2 3 .8 4.4L8 11.5l-3.9 2.1.8-4.4-3.2-3 4.4-.6zm0 2.9L6.9 6.9l-2.6.3 1.9 1.8-.5 2.6L8 10.3l2.3 1.3-.5-2.6 1.9-1.8-2.6-.3z'/%3E%3C/svg%3E") center / 18px no-repeat;
+  }
+  & .jl-fav-star:hover { scale: 1.18; }
+  & .jl-fav-star:hover::before { background-color: var(--jl-accent); }
+  & .jl-fav-star:active { scale: .85; transition: scale 90ms var(--jl-quick); }
+  & .jl-fav-star[aria-pressed="true"] { animation: jl-check 550ms var(--jl-spring); }
+  & .jl-fav-star[aria-pressed="true"]::before {
+    background-color: var(--jl-accent);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.6l1.9 4 4.4.6-3.2 3 .8 4.4L8 11.5l-3.9 2.1.8-4.4-3.2-3 4.4-.6z'/%3E%3C/svg%3E");
+  }
+  & .jl-fav-star:focus-visible { outline: 2px solid var(--jl-accent); outline-offset: -2px; }
+  & #Resources .prom-table__body .prom-table-cell__data:has(> .jl-fav-star) { display: flex; align-items: center; }
+  /* in the tree: favorites have their own group, and come first on their level below */
+  & .jl-tree-favs[hidden], & .jl-tree-heading[hidden] { display: none; }
+  & .jl-tree { overflow-anchor: none; }   /* a new group here must not move the list beside it */
+  & .jl-tree-favs { margin-bottom: 12px !important; }
+  & .jl-tree-favs .jl-tree-row { padding-left: 6px; }
+  & .jl-tree-favs .jl-fav-star { width: 26px; height: 26px; margin-left: 2px; }
+  & .jl-tree-favs .jl-fav-star::before { mask-size: 15px; }
+  & .jl-tree ul:not(.jl-tree-favs) { display: flex; flex-direction: column; }
+  & .jl-tree li:has(> .jl-tree-fav) { order: -1; }
+  & .jl-tree ul[hidden] { display: none; }
 
   /* ---------- back and forward: always first in the room's title row ---------- */
   & .prom-secondary-menu__title { align-items: center; }
@@ -772,8 +816,6 @@ html[data-jl] {
 html[data-jl="dark"] {
   /* the site's icons are dark-grey SVGs, made for a white page */
   & img:is([src*="--gray--"], [src*="--black"], [src*="--brand--"]) { filter: var(--jl-icon-filter); }
-  /* card glyphs come in the course's dark shade */
-  & :is(.coursecard__favouriteToggle, .coursecard__editOptions) { filter: brightness(1.5) saturate(1.1); }
 
   & [style*="background-color: rgb(255, 255, 255)"], & [style*="background-color: white"], & [style*="background-color: #fff"] { background-color: transparent !important; }
   & [style*="color: rgb(0, 0, 0)"]:not([style*="background-color: rgb(0, 0, 0)"]), & [style*="color: #000"], & [style*="color: black"], & font[color="#000000"] { color: var(--jl-text) !important; }

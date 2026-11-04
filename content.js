@@ -214,7 +214,11 @@
       release();
       const inputs = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
       const stay = () => { if (scrollY !== y) scrollTo({ top: y, behavior: 'instant' }); };
+      // a list being redrawn makes the page shorter for a moment, which moves it without a scroll event when it grows back
+      const growth = new ResizeObserver(stay);
+      growth.observe(document.documentElement);
       const stop = () => {
+        growth.disconnect();
         removeEventListener('scroll', stay);
         for (const type of inputs) removeEventListener(type, stop, true);
       };
@@ -228,13 +232,24 @@
       if (event.navigationType !== 'traverse' && location.pathname.startsWith('/Resources')) holdScroll(0);
     });
 
-    let clicked = null;
+    // a folder became or stopped being a favorite: ask for the list again, if it's in our order
+    document.addEventListener('jl-resort', () => {
+      const current = [...document.querySelectorAll('.prom-table__header-cell')].find(cell => /Udgivet/.test(cell.textContent));
+      const newest = [...document.querySelectorAll('.prom-dropdown__listitem')].find(item => /nyeste først/i.test(item.textContent));
+      if (current?.getAttribute('aria-sort') !== 'descending' || !newest) return;
+      holdScroll(scrollY);
+      newest.click();
+    });
+
+    let clicked = false;   // once per visit to a folder, so choosing another sort yourself sticks
+    let visiting = location.search;
     const check = () => {
-      if (clicked === location.search || !root.dataset.jl) return;
+      if (visiting !== location.search) { visiting = location.search; clicked = false; }
+      if (clicked || !root.dataset.jl) return;
       const current = [...document.querySelectorAll('.prom-table__header-cell')].find(cell => /Udgivet/.test(cell.textContent));
       const newest = [...document.querySelectorAll('.prom-dropdown__listitem')].find(item => /nyeste først/i.test(item.textContent));
       if (!current || !newest || current.getAttribute('aria-sort') === 'descending') return;
-      clicked = location.search;
+      clicked = true;
       holdScroll(scrollY);
       newest.click();
     };
@@ -258,7 +273,97 @@
     heading.className = 'jl-tree-heading';
     heading.textContent = 'Mapper';
     const top = document.createElement('ul');
-    tree.append(heading, top);
+    const favHeading = document.createElement('div');
+    favHeading.className = 'jl-tree-heading';
+    favHeading.textContent = 'Favoritter';
+    const favList = document.createElement('ul');
+    favList.className = 'jl-tree-favs';
+    tree.append(favHeading, favList, heading, top);
+
+    // moves between folders through the site's router, like its own links
+    const goTo = (event, id, url) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
+      event.preventDefault();
+      if (folderIn(location.search) === id) return;
+      const state = { __historySync: { FolderID: Number(id) } };
+      history.pushState(state, '', url);
+      dispatchEvent(new PopStateEvent('popstate', { state }));
+    };
+
+    // Favorites live in the browser's synced storage. The page's own script reads the ids from localStorage to order lists.
+    let favs = [];
+    const isFav = id => favs.some(item => item.id === String(id));
+    const homeFolder = () => folderIn(document.getElementById('resources-page')?.href);
+    const setFavs = next => {
+      favs = next;
+      try { localStorage.setItem('jl-fav-folders', JSON.stringify(favs.map(item => item.id))); } catch {}
+    };
+    function toggleFav(item) {
+      setFavs(isFav(item.id) ? favs.filter(other => other.id !== item.id) : [...favs, item]);
+      chrome.storage.sync.set({ favFolders: favs });
+      showFavs();
+      document.dispatchEvent(new Event('jl-resort'));
+    }
+    const makeStar = getItem => {
+      const star = document.createElement('button');
+      star.type = 'button';
+      star.className = 'jl-fav-star';
+      star.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFav(getItem());
+      });
+      return star;
+    };
+    const paintStar = (star, on) => {
+      star.setAttribute('aria-pressed', on);
+      const label = on ? 'Fjern fra favoritter' : 'Føj til favoritter';
+      star.title = label;
+      star.setAttribute('aria-label', label);
+    };
+    function showFavs() {
+      const here = favs.filter(item => item.home === homeFolder());
+      favHeading.hidden = favList.hidden = !here.length;
+      favList.replaceChildren(...here.map(item => {
+        const row = document.createElement('div');
+        row.className = 'jl-tree-row';
+        row.classList.toggle('jl-tree-current', folderIn(location.search) === item.id);
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.textContent = item.title;
+        link.title = item.title;
+        link.addEventListener('click', event => goTo(event, item.id, item.url));
+        const star = makeStar(() => item);
+        paintStar(star, true);
+        row.append(link, star);
+        const node = document.createElement('li');
+        node.append(row);
+        return node;
+      }));
+      for (const [id, { row }] of nodes) row.classList.toggle('jl-tree-fav', isFav(id));
+      starRows();
+    }
+    // a star on every folder in the list; the site redraws rows, so this runs after each change
+    function starRows() {
+      for (const row of document.querySelectorAll('#Resources .prom-table__body tr')) {
+        const link = row.querySelector('a[href*="FolderID"]');
+        let star = row.querySelector('.jl-fav-star');
+        if (!link) { star?.remove(); continue; }
+        if (!star) {
+          star = makeStar(() => {
+            const current = row.querySelector('a[href*="FolderID"]');
+            return { id: folderIn(current.getAttribute('href')), title: current.textContent.trim(), url: current.getAttribute('href'), home: homeFolder() };
+          });
+          row.querySelector('.prom-table-cell__data')?.append(star);
+        }
+        paintStar(star, isFav(folderIn(link.getAttribute('href'))));
+      }
+    }
+    chrome.storage.onChanged.addListener(changes => {
+      if (!changes.favFolders) return;
+      setFavs(changes.favFolders.newValue || []);
+      showFavs();
+    });
 
     const asked = new Map();
     const foldersIn = id => {
@@ -305,14 +410,8 @@
         }
       };
       toggle.addEventListener('click', () => open(toggle.getAttribute('aria-expanded') !== 'true'));
-      link.addEventListener('click', event => {
-        if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
-        event.preventDefault();
-        if (folderIn(location.search) === id) return;
-        const state = { __historySync: { FolderID: Number(id) } };
-        history.pushState(state, '', item.elementUrl);
-        dispatchEvent(new PopStateEvent('popstate', { state }));
-      });
+      link.addEventListener('click', event => goTo(event, id, item.elementUrl));
+      row.classList.toggle('jl-tree-fav', isFav(id));
       nodes.set(id, { row, link, open });
       return node;
     }
@@ -332,11 +431,13 @@
       const here = nodes.get(current);
       here?.row.classList.add('jl-tree-current');
       here?.link.setAttribute('aria-current', 'page');
+      showFavs();
     }
 
     const place = () => {
       const primary = document.querySelector('.prom-navigation-panel__primary-items');
       if (primary && tree.previousElementSibling !== primary) primary.after(tree);
+      starRows();
     };
     let queued = false;
     new MutationObserver(() => {
@@ -349,8 +450,11 @@
     whenReady(() => document.getElementById('resources-page'), async homeLink => {
       const home = folderIn(homeLink.href);
       if (!home) return;
+      const { favFolders } = await chrome.storage.sync.get('favFolders');
+      setFavs(favFolders || []);
       top.replaceChildren(...(await foldersIn(home)).map(makeNode));
       place();
+      showFavs();
       follow();
     });
   }
