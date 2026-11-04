@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "jlearning",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Friis's raised 3D look and elastic motion for itslearning.",
   "minimum_chrome_version": "120",
   "permissions": [
@@ -34,7 +34,8 @@
       ],
       "js": [
         "generated/known.js",
-        "content.js"
+        "content.js",
+        "video.js"
       ],
       "run_at": "document_start",
       "all_frames": true,
@@ -71,6 +72,24 @@
       "js": [
         "generated/known.js",
         "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://*.panopto.eu/Panopto/Pages/Embed.aspx*",
+        "https://*.panopto.com/Panopto/Pages/Embed.aspx*"
+      ],
+      "css": [
+        "generated/easing.css",
+        "tokens.css",
+        "panopto.css"
+      ],
+      "js": [
+        "generated/known.js",
+        "content.js",
+        "panopto.js"
       ],
       "run_at": "document_start",
       "all_frames": true

@@ -56,6 +56,8 @@ Needs Chrome 120 or newer. Also loads in Edge.
 - `tokens.css`: the palette.
 - `theme.css`: the Friis look, by hand. Start here to change how something looks.
 - `readers.css`: the PDF and PowerPoint readers.
+- `video.js`: our video player, for videos on itslearning that would otherwise get the browser's plain controls.
+- `panopto.css`, `panopto.js`: Panopto's player, which plays most of itslearning's videos, in the same look. Panopto does the playing.
 - `generated/site-dark.css`: itslearning's own stylesheets, reduced to their colours and remapped to dark.
 - `generated/icons/`: the site's dark icons, recoloured for a dark page. Pages load only the ones they show.
 - `generated/easing.css`: spring curves and course colours.

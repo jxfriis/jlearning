@@ -11,7 +11,7 @@ function show(theme) {
   });
 }
 
-chrome.storage.sync.get(['theme', 'roomView', 'readerPdf', 'readerPpt'], saved => {
+chrome.storage.sync.get(['theme', 'roomView', 'readerPdf', 'readerPpt', 'readerVideo'], saved => {
   show(saved.theme || 'dark');
   for (const row of rows) row.setAttribute('aria-checked', saved[row.dataset.key] ?? true);
 });

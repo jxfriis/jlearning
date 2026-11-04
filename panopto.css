@@ -1,0 +1,118 @@
+/* Panopto's player, which plays itslearning's videos, in our look. Panopto keeps doing everything itself (streaming, captions,
+   quizzes, several camera angles); this rearranges its controls into the same raised bar as video.js. Only with the
+   switch on: content.js sets html[data-jl-reader="video"]. Panopto sizes much of this inline or by id, hence !important. */
+html[data-jl-reader="video"] {
+  --jl-track: color-mix(in srgb, var(--jl-text) 24%, transparent);
+
+  & #gradientBottom { display: none !important; }
+
+  /* ---------- the big button in the middle ---------- */
+  & #playIconContainer {
+    display: grid; place-items: center; box-sizing: border-box; width: 76px !important; height: 76px !important;
+    border: 1px solid transparent; border-bottom-width: 4px; border-radius: 50%;
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box !important;
+    box-shadow: 0 8px 26px rgb(0 0 0 / .45);
+    animation: jl-video-pop 600ms var(--jl-spring);
+    transition: scale 600ms var(--jl-spring);
+  }
+  & #playIconContainer[style*="none"] { display: none !important; }
+  & #playIconContainer:hover { scale: 1.1; }
+  & #playIconContainer:active { scale: .92; transition: scale 90ms; }
+  & #playIconContainer i { position: static !important; width: auto !important; height: auto !important; margin: 0 !important; font-size: 42px !important; line-height: 1 !important; color: var(--jl-on-accent) !important; opacity: 1 !important; }
+
+  /* ---------- the bar ---------- */
+  & #hoverButtonContainer {
+    display: flex; flex-wrap: wrap; align-items: center; box-sizing: border-box;
+    left: 10px !important; right: 10px !important; bottom: 10px !important; height: auto !important; padding: 8px 10px 8px;
+    color: var(--jl-text);
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 16px;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    box-shadow: 0 8px 26px rgb(0 0 0 / .4);
+    transition: opacity 160ms, translate 500ms var(--jl-spring), z-index 0s 160ms;
+  }
+  & #player.is-mouseout.is-playing #hoverButtonContainer { translate: 0 24px; }
+  /* Panopto's handle for its quiz and chapter drawer sits at the very bottom */
+  & #embed.show-interactivity #hoverButtonContainer { bottom: 30px !important; }
+  & #hoverButtonContainer .seek-bar-container { position: static !important; flex: 0 0 100%; box-sizing: border-box; height: 20px !important; width: auto !important; margin: 0 0 8px !important; padding: 0 8px !important; display: flex; align-items: center; }
+  & #hoverButtonContainer .playback-controls { position: static !important; flex: none; width: auto !important; height: 40px !important; }
+  & #hoverButtonContainer #secondaryControls { position: static !important; flex: none; margin-left: auto; width: auto !important; height: 40px !important; }
+  & :is(#playbackControls, #navigationControls) { display: flex !important; align-items: center; gap: 4px; height: 40px !important; }
+  & #navigationControls .divider { display: none !important; }
+
+  & #hoverButtonContainer .button-control {
+    position: relative !important; display: grid !important; place-items: center; float: none !important; flex: none; box-sizing: border-box;
+    width: 40px !important; height: 40px !important; min-width: 40px; margin: 0 !important; padding: 0 !important;
+    font-size: 24px !important; line-height: 1 !important; color: var(--jl-text) !important; opacity: 1 !important; border-radius: 11px; cursor: pointer;
+    transition: scale 550ms var(--jl-spring);
+  }
+  & #hoverButtonContainer .button-control span { font-size: inherit !important; line-height: 1 !important; }
+  & #hoverButtonContainer .button-control svg { width: 22px !important; height: 22px !important; fill: currentColor; }
+  & #hoverButtonContainer .button-control:hover { background: var(--jl-selected-fill); scale: 1.08; }
+  & #hoverButtonContainer .button-control:active { scale: .88; transition: scale 90ms; }
+  & #hoverButtonContainer .button-control.disabled { opacity: .35 !important; }
+  & #hoverButtonContainer .button-control.play-pause {
+    margin-right: 2px !important; color: var(--jl-on-accent) !important;
+    border: 1px solid transparent; border-bottom-width: 3px;
+    background: var(--jl-accent-fill) padding-box, var(--jl-accent-edge) border-box;
+  }
+  /* the settings wheel */
+  & #hoverButtonContainer .MuiIconButton-root { width: 40px !important; height: 40px !important; padding: 0 !important; color: var(--jl-text) !important; border-radius: 11px !important; transition: scale 550ms var(--jl-spring); }
+  & #hoverButtonContainer .MuiIconButton-root:hover { background: var(--jl-selected-fill) !important; scale: 1.08; }
+  & #hoverButtonContainer .MuiIconButton-root svg { width: 22px !important; height: 22px !important; }
+
+  & #hoverButtonContainer .volume-control { position: static !important; display: flex !important; align-items: center; width: auto !important; height: 40px !important; overflow: visible !important; }
+  & #hoverButtonContainer .volume-bar { position: relative !important; display: inline-block !important; width: 84px !important; margin: 0 8px 0 6px !important; opacity: 1 !important; visibility: visible !important; }
+  & #hoverButtonContainer .time-display { position: static !important; display: flex !important; align-items: center; gap: 4px; height: 40px !important; margin: 0 !important; padding: 0 8px !important; font-size: 13px !important; line-height: 1 !important; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--jl-muted) !important; }
+  & #hoverButtonContainer .time-display .elapsed { font-size: 13px !important; line-height: 1 !important; font-weight: 600; color: var(--jl-text) !important; }
+  & #hoverButtonContainer .time-display .duration { font-size: 13px !important; line-height: 1 !important; display: inline !important; color: var(--jl-muted) !important; }
+  & #hoverButtonContainer .time-display .duration::before { content: "/ "; }
+
+  /* ---------- sliders ---------- */
+  & #hoverButtonContainer .MuiSlider-root { box-sizing: border-box; display: block !important; width: 100%; height: 6px !important; margin: 0 !important; padding: 0 !important; color: var(--jl-accent) !important; border-radius: 3px; }
+  /* Panopto pushes its timeline's line down with a margin, which leaves the handle off the line */
+  & #hoverButtonContainer :is(.MuiSlider-rail, .MuiSlider-track) { top: 50% !important; margin: 0 !important; border: 0 !important; box-sizing: border-box; transform: translateY(-50%) !important; }
+  & #hoverButtonContainer .MuiSlider-rail { height: 6px !important; background: var(--jl-track) !important; opacity: 1 !important; border-radius: 3px; }
+  & #hoverButtonContainer .MuiSlider-track { height: 6px !important; background: var(--jl-accent) !important; border: 0 !important; border-radius: 3px; }
+  & #hoverButtonContainer .MuiSlider-thumb {
+    top: 50% !important; width: 14px !important; height: 14px !important; margin: 0 !important; box-sizing: border-box;
+    color: var(--jl-accent) !important; border: 0 !important; border-radius: 50% !important; background: var(--jl-accent) !important;
+    box-shadow: 0 1px 4px rgb(0 0 0 / .5) !important; opacity: 1 !important; visibility: visible !important; transform: translate(-50%, -50%) !important;
+    transition: scale 500ms var(--jl-spring), left 0s !important;
+  }
+  & #hoverButtonContainer .MuiSlider-thumb:hover { scale: 1.25; }
+  & #hoverButtonContainer .MuiSlider-thumb::after, & #hoverButtonContainer .MuiSlider-thumb::before { display: none !important; }
+
+  /* ---------- menus ---------- */
+  & .MuiPaper-root.MuiPopover-paper, & .MuiMenu-paper, & #playbackSpeedMenu {
+    color: var(--jl-text) !important;
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 13px !important;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box !important;
+    box-shadow: 0 8px 26px rgb(0 0 0 / .4) !important;
+  }
+  & .MuiPopover-paper :is(li, button, [role=menuitem]) { color: inherit !important; border-radius: 9px; }
+  & .MuiPopover-paper :is(li, button, [role=menuitem]):hover { background: var(--jl-selected-fill) !important; }
+
+  /* our speed button and its menu */
+  & #hoverButtonContainer .button-control.jl-speed { width: auto !important; min-width: 40px; padding: 0 8px !important; font: 650 14px/1 system-ui, sans-serif !important; font-variant-numeric: tabular-nums; }
+  & .jl-speed-menu {
+    position: absolute; right: 168px; bottom: 120px; z-index: 20; display: flex; flex-direction: column; min-width: 96px; padding: 5px; color: var(--jl-text);
+    border: 1px solid transparent; border-bottom-width: 3px; border-radius: 13px;
+    background: var(--jl-raised-fill) padding-box, var(--jl-raised-edge) border-box; box-shadow: 0 8px 26px rgb(0 0 0 / .4);
+    transform-origin: 70% 100%; animation: jl-video-pop 420ms var(--jl-spring);
+  }
+  & .jl-speed-menu[hidden] { display: none; }
+  & .jl-speed-menu button { padding: 7px 12px; text-align: left; font: 14px/1.2 system-ui, sans-serif; font-variant-numeric: tabular-nums; color: inherit; border: 0; border-radius: 9px; background: none; cursor: pointer; }
+  & .jl-speed-menu button:hover { background: var(--jl-selected-fill); }
+  & .jl-speed-menu button[aria-checked="true"] { color: var(--jl-accent); font-weight: 650; }
+
+  /* small frames keep what you need most */
+  @media (max-width: 560px) {
+    & #hoverButtonContainer .rewind-forward, & #hoverButtonContainer .volume-bar { display: none !important; }
+  }
+  @media (max-width: 400px) {
+    & #navigationControls > :not(.jl-speed, :last-child) { display: none !important; }
+    & #hoverButtonContainer .time-display { padding: 0 2px !important; font-size: 12px !important; }
+  }
+}
+
+@keyframes jl-video-pop { from { scale: .7; opacity: 0; } }

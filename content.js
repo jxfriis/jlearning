@@ -5,9 +5,10 @@
   const dark = matchMedia('(prefers-color-scheme: dark)');
   let theme = 'dark';
 
-  // The PDF and PowerPoint viewers are readers of ours unless switched off, in which case they're left alone.
+  // The PDF, PowerPoint and Panopto video viewers are ours unless switched off, in which case they're left alone.
   const reader = location.pathname.startsWith('/PdfViewer/') ? 'pdf'
-    : location.hostname === 'powerpoint.officeapps.live.com' ? 'ppt' : null;
+    : location.hostname === 'powerpoint.officeapps.live.com' ? 'ppt'
+    : /\.panopto\.(eu|com)$/.test(location.hostname) ? 'video' : null;
   let readerOn = true;
 
   const apply = () => {
@@ -40,7 +41,7 @@
   } catch {}
   apply();
 
-  const readerKey = kind => (kind === 'pdf' ? 'readerPdf' : 'readerPpt');
+  const readerKey = kind => ({ pdf: 'readerPdf', ppt: 'readerPpt', video: 'readerVideo' })[kind];
   chrome.storage.sync.get(['theme', readerKey(reader)], saved => {
     if (saved.theme && saved.theme !== theme) setTheme(saved.theme);
     if (reader && (saved[readerKey(reader)] ?? true) !== readerOn) setReader(!readerOn);
@@ -88,6 +89,17 @@
         if (on) root.dataset.jlMerge = kind;
         else delete root.dataset.jlMerge;
       }));
+    });
+  }
+
+  // A Panopto video sits in a frame from another site, which tells this page it's there. The switch goes in the title row.
+  if (location.pathname === '/LearningToolElement/ViewLearningToolElement.aspx') {
+    addEventListener('message', function panopto(event) {
+      if (!event.data?.jlPanopto || !/^https:\/\/[^/]+\.panopto\.(eu|com)$/.test(event.origin)) return;
+      removeEventListener('message', panopto);
+      whenReady(() => document.querySelector('.prom-page-header-editable__header-container'), row => {
+        row.append(readerSwitch('readerVideo', null, 'jlearning player'));
+      });
     });
   }
 

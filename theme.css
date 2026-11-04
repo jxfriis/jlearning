@@ -613,6 +613,7 @@ html[data-jl] {
   & .jl-history .jl-forward::before { rotate: 180deg; }
   & .jl-history button:disabled { opacity: .4; box-shadow: none; cursor: default; }
   & .prom-secondary-menu__title .jl-reader-switch { margin: 0 0 0 auto; flex: none; }
+  & .prom-page-header-editable__header-container .jl-reader-switch { flex: none; margin: 0 0 0 12px; align-self: center; }
   & .jl-room-more { display: none; }
 
   /* ---------- the clearer room view (switch in the title row) ---------- */
