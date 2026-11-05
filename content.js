@@ -42,7 +42,7 @@
   apply();
 
   const readerKey = kind => ({ pdf: 'readerPdf', ppt: 'readerPpt', video: 'readerVideo' })[kind];
-  chrome.storage.sync.get(['theme', readerKey(reader)], saved => {
+  chrome.storage.sync.get(reader ? ['theme', readerKey(reader)] : ['theme'], saved => {
     if (saved.theme && saved.theme !== theme) setTheme(saved.theme);
     if (reader && (saved[readerKey(reader)] ?? true) !== readerOn) setReader(!readerOn);
   });

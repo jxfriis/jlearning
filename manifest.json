@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "jlearning",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Friis's raised 3D look and elastic motion for itslearning.",
   "minimum_chrome_version": "120",
   "permissions": [
